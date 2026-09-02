@@ -1,0 +1,32 @@
+scenario: "urban traffic intersection video analytics (smart city)"
+
+events_list:
+  - nominal_traffic_flow
+  - vehicle_to_vehicle_collision
+  - motorcycle_or_scooter_crash
+  - vehicle_to_pedestrian_collision
+  - jaywalking
+  - person_on_ground_in_roadway
+  - vehicle_fire_or_heavy_smoke
+  - collision_aftermath
+  - emergency_vehicle_response
+  - unsafe_turn_or_right_of_way_conflict
+  - signal_violation_or_wrong_way
+  - stalled_vehicle_or_roadway_obstruction
+
+objects_of_interest:
+  - car
+  - yellow taxi
+  - motorcycle
+  - scooter
+  - truck
+  - bus
+  - bicycle
+  - pedestrian
+  - ambulance
+  - police vehicle
+  - fire truck
+  - traffic light
+  - pedestrian crosswalk
+  - stop sign
+  - motorcycle waiting zone

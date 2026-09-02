@@ -1,0 +1,131 @@
+domain: parking facility video analytics
+baseline_event: normal parking activity
+
+keywords:
+  - parking lot
+  - parking garage
+  - parking structure
+  - parking deck
+  - parked car
+  - parking space
+  - parking meter
+  - garage
+  - car park
+  - parking ramp
+  - parking entrance
+  - parking exit
+  - parking barrier
+  - parking gate
+  - ticket machine
+  - pay station
+  - valet
+  - accessible parking space
+  - loading zone
+  - fire lane
+  - speed bump
+  - pedestrian walkway
+  - vehicle travel lane
+
+events:
+  critical:
+    # vehicle-on-person
+    - vehicle strikes pedestrian
+    - vehicle strikes cyclist
+    - vehicle drags person
+    - child struck by vehicle
+    # vehicle-on-vehicle / structure
+    - vehicle collision at intersection or lane
+    - vehicle collision while backing
+    - vehicle strikes structure or pillar
+    - vehicle falls from elevated deck
+    # fire / medical
+    - vehicle fire in parking area
+    - structural fire in garage
+    - medical emergency or person collapse
+
+  serious:
+    # post-collision / injury
+    - hit and run after collision
+    - pedestrian fall or injury
+    - vehicle crashes through gate or barrier
+    - vehicle trapped in flooding garage
+    # property damage visible in scene
+    - vehicle window smashed or broken
+    - vandalism to vehicle
+    - catalytic converter removed from vehicle
+    - vehicle driven away rapidly from stall
+    # response
+    - emergency response on site
+    - facility staff intervention
+
+  moderate:
+    # driving hazards
+    - reckless driving or drifting in lot
+    - wrong-way driving in marked lane
+    - speeding through parking area
+    - vehicle running stop sign in lot
+    - vehicle ignoring pedestrian right of way
+    # parking hazards
+    - illegal parking blocking fire lane
+    - double parking blocking access
+    - parking in accessible space without permit
+    - vehicle blocking entrance or exit
+    # pedestrian hazards
+    - pedestrian walking in vehicle travel lane
+    - shopping cart or object collision with vehicle
+    - cyclist riding in vehicle-only area
+    # minor contact
+    - door ding or minor contact between vehicles
+
+  low:
+    - person lingering near multiple vehicles
+    - person checking door handles on multiple vehicles
+    - abandoned or long-term unattended vehicle
+    - presence after posted hours
+    - spill or debris in travel lane
+    - congestion at entrance or exit
+    - malfunctioning gate or barrier
+    - inadequate lighting in parking area
+    - vehicle circling area repeatedly
+    - unattended child in vehicle
+
+remap:
+  car accident: vehicle collision at intersection or lane
+  fender bender: vehicle collision while backing
+  backing accident: vehicle collision while backing
+  parking lot crash: vehicle collision at intersection or lane
+  vehicle rollover: vehicle falls from elevated deck
+  pedestrian hit: vehicle strikes pedestrian
+  person hit by car: vehicle strikes pedestrian
+  child hit: child struck by vehicle
+  pedestrian knocked down: vehicle strikes pedestrian
+  break-in: vehicle window smashed or broken
+  smash and grab: vehicle window smashed or broken
+  car taken: vehicle driven away rapidly from stall
+  vehicle driven off: vehicle driven away rapidly from stall
+  property damage: vandalism to vehicle
+  keyed car: vandalism to vehicle
+  graffiti on vehicle: vandalism to vehicle
+  cat converter removed: catalytic converter removed from vehicle
+  dangerous driving: reckless driving or drifting in lot
+  speeding: speeding through parking area
+  wrong way: wrong-way driving in marked lane
+  slip and fall: pedestrian fall or injury
+  person on ground: medical emergency or person collapse
+  medical emergency: medical emergency or person collapse
+  customer fall: pedestrian fall or injury
+  fire lane violation: illegal parking blocking fire lane
+  blocked exit: vehicle blocking entrance or exit
+  unusual person: person lingering near multiple vehicles
+  unusual activity: person checking door handles on multiple vehicles
+  abandoned vehicle: abandoned or long-term unattended vehicle
+  gate crash: vehicle crashes through gate or barrier
+  barrier breach: vehicle crashes through gate or barrier
+
+excluded:
+  - video artifact or glitch
+  - camera malfunction
+  - unknown
+  - other
+  - routine maintenance
+  - normal weather

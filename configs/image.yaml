@@ -1,0 +1,153 @@
+# =============================================================================
+# Cosmos-Curator Image Annotate Pipeline -- Full Reference Config
+# =============================================================================
+# Flat YAML consumed by upstream image config-file mode:
+#   python -m cosmos_curator.pipelines.image.run_pipeline <config.yaml>
+# Keys are argparse dest names (snake_case). Omitted keys get parser defaults.
+#
+# Run:
+#   make run_image_pipeline IMAGE_CONFIG_FILE=configs/image.yaml
+#
+# Or inside the container:
+#   pixi run -e default --as-is python -m cosmos_curator.pipelines.image.run_pipeline \
+#       /config/pipeline_config.yaml
+#
+# Upstream reference: cosmos-curator/docs/curator/reference/IMAGE_PIPELINE.md
+# =============================================================================
+
+pipeline: "annotate"
+
+# =============================================================================
+# Common Settings (mirrors CommonPipelineSettings)
+# =============================================================================
+
+# -- S3 profiles --
+input_s3_profile_name: "default"             # --input-s3-profile-name
+output_s3_profile_name: "default"            # --output-s3-profile-name
+
+# -- Execution --
+execution_mode: "AUTO"                       # --execution-mode [AUTO, BATCH, STREAMING]
+limit: 0                                     # --limit  (0 = process all)
+verbose: false                               # --verbose
+# In-container mount point (Makefile maps host MODELS_DIR -> /config/models).
+# Keep as a literal path; the config loader does not expand env vars / ${VAR}.
+model_weights_path: "/config/models"         # --model-weights-path
+
+# -- Profiling --
+perf_profile: true                           # --perf-profile / --no-perf-profile
+profile_tracing: false                       # --profile-tracing
+profile_tracing_sampling: 0.01               # --profile-tracing-sampling
+profile_tracing_otlp_endpoint: ""            # --profile-tracing-otlp-endpoint
+profile_cpu: false                           # --profile-cpu
+profile_memory: false                        # --profile-memory
+profile_gpu: false                           # --profile-gpu
+profile_cpu_exclude: "_root"                 # --profile-cpu-exclude
+profile_memory_exclude: "_root"              # --profile-memory-exclude
+profile_gpu_exclude: "_root"                 # --profile-gpu-exclude
+
+# =============================================================================
+# Required I/O
+# =============================================================================
+
+# S3 URI or local host path to a directory of input images (jpg/png/webp/etc.).
+# For local paths, also pass DATA_DIR=<dir> to make so it is bind-mounted in.
+input_image_path: "<YOUR_IMAGE_INPUT_PATH>"  # --input-image-path  (REQUIRED)
+
+# S3 URI or local host path for output. The pipeline writes images/, filtered_images/,
+# embeddings/, metas/, and summary.json under this path.
+output_path: "<YOUR_IMAGE_OUTPUT_PATH>"      # --output-path  (REQUIRED)
+
+# =============================================================================
+# Worker Concurrency
+# =============================================================================
+
+num_ingest_workers_per_node: 4               # --num-ingest-workers-per-node
+num_output_workers_per_node: 8               # --num-output-workers-per-node
+
+# =============================================================================
+# Captioning
+# =============================================================================
+
+generate_captions: true                      # --no-generate-captions sets false
+captioning_algorithm: "qwen"                 # --captioning-algorithm [qwen, qwen3_5_27b, qwen3_vl_30b, qwen3_vl_30b_fp8, qwen3_vl_235b, qwen3_vl_235b_fp8, nemotron, cosmos_r1, cosmos_r2, openai, gemini]
+caption_num_gpus: 1                          # --caption-num-gpus
+num_caption_prep_workers_per_node: 2         # --num-caption-prep-workers-per-node
+caption_prep_min_pixels: null                # --caption-prep-min-pixels  (default 128*28*28)
+caption_prep_max_pixels: null                # --caption-prep-max-pixels  (default 768*28*28)
+caption_batch_size: 16                       # --caption-batch-size
+caption_max_output_tokens: 8192              # --caption-max-output-tokens
+caption_prompt_variant: "image"              # --caption-prompt-variant
+caption_prompt_text: null                    # --caption-prompt-text  (overrides variant)
+
+# -- Gemini captioning --
+gemini_caption_model: "models/gemini-2.5-pro"  # --gemini-caption-model
+gemini_caption_retries: 3                    # --gemini-caption-retries
+gemini_retry_delay_seconds: 1.0              # --gemini-retry-delay-seconds
+
+# -- OpenAI-compatible captioning --
+openai_caption_model: "auto"                 # --openai-caption-model
+openai_caption_retries: 3                    # --openai-caption-retries
+openai_retry_delay_seconds: 1.0              # --openai-retry-delay-seconds
+openai_caption_raw_image: false              # --openai-caption-raw-image
+
+# =============================================================================
+# Semantic Filter (optional)
+# =============================================================================
+
+semantic_filter: "disable"                   # --semantic-filter [enable, disable]
+semantic_filter_score_only: false            # --semantic-filter-score-only
+semantic_filter_model_variant: "qwen"        # --semantic-filter-model-variant  (same enum as captioning_algorithm)
+semantic_filter_prompt_variant: "default"    # --semantic-filter-prompt-variant
+semantic_filter_categories: null             # --semantic-filter-categories  (comma-separated)
+semantic_filter_rejection_threshold: 0.5     # --semantic-filter-rejection-threshold
+semantic_filter_batch_size: 16               # --semantic-filter-batch-size
+semantic_filter_max_output_tokens: 8192      # --semantic-filter-max-output-tokens
+semantic_filter_num_gpus: 1                  # --semantic-filter-num-gpus
+
+# -- Semantic filter: OpenAI-compatible backend --
+semantic_filter_openai_model_name: "auto"    # --semantic-filter-openai-model-name
+semantic_filter_openai_retries: 3            # --semantic-filter-openai-retries
+semantic_filter_openai_retry_delay_seconds: 1.0  # --semantic-filter-openai-retry-delay-seconds
+
+# -- Semantic filter: Gemini backend --
+semantic_filter_gemini_model_name: "models/gemini-2.5-pro"  # --semantic-filter-gemini-model-name
+semantic_filter_gemini_retries: 3            # --semantic-filter-gemini-retries
+semantic_filter_gemini_retry_delay_seconds: 1.0  # --semantic-filter-gemini-retry-delay-seconds
+
+# =============================================================================
+# Image Classifier (optional)
+# =============================================================================
+
+image_classifier: "disable"                  # --image-classifier [enable, disable]
+image_classifier_model_variant: "qwen"       # --image-classifier-model-variant  (same enum as captioning_algorithm)
+image_classifier_rejection_threshold: 0.5    # --image-classifier-rejection-threshold
+image_classifier_allow: null                 # --image-classifier-allow  (list of strings)
+image_classifier_block: null                 # --image-classifier-block  (list of strings)
+image_classifier_use_custom_categories: false  # --image-classifier-use-custom-categories
+image_classifier_allow_file: null            # --image-classifier-allow-file
+image_classifier_block_file: null            # --image-classifier-block-file
+image_classifier_batch_size: 16              # --image-classifier-batch-size
+image_classifier_max_output_tokens: 8192     # --image-classifier-max-output-tokens
+image_classifier_num_gpus: 1                 # --image-classifier-num-gpus
+
+# -- Image classifier: OpenAI-compatible backend --
+image_classifier_openai_model_name: "auto"   # --image-classifier-openai-model-name
+image_classifier_openai_retries: 3           # --image-classifier-openai-retries
+image_classifier_openai_retry_delay_seconds: 1.0  # --image-classifier-openai-retry-delay-seconds
+
+# -- Image classifier: Gemini backend --
+image_classifier_gemini_model_name: "models/gemini-2.5-pro"  # --image-classifier-gemini-model-name
+image_classifier_gemini_retries: 3           # --image-classifier-gemini-retries
+image_classifier_gemini_retry_delay_seconds: 1.0  # --image-classifier-gemini-retry-delay-seconds
+
+# =============================================================================
+# Embedding
+# =============================================================================
+
+generate_embeddings: true                    # --no-generate-embeddings sets false
+embedding_algorithm: "internvideo2"          # --embedding-algorithm [clip, cosmos-embed1-224p, cosmos-embed1-336p, cosmos-embed1-448p, internvideo2, openai]
+embedding_gpus_per_worker: 1.0               # --embedding-gpus-per-worker
+
+# -- OpenAI-compatible embedding backend --
+openai_embedding_model_name: "auto"          # --openai-embedding-model-name
+openai_embedding_max_concurrent_requests: 8  # --openai-embedding-max-concurrent-requests

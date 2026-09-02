@@ -1,0 +1,402 @@
+# =============================================================================
+# Cosmos-Curator Split Pipeline -- Full Reference Config
+# =============================================================================
+# Flat YAML consumed directly by upstream cosmos-curator load_pipeline_config.
+# Keys are argparse dest names (snake_case). Omitted keys get parser defaults.
+#
+# Run:
+#   make run-pipeline CONFIG_FILE=configs/split.yaml
+#
+# Or inside the container:
+#   pixi run -e default --as-is python -m cosmos_curator.pipelines.video.run_pipeline /config/split.yaml
+# =============================================================================
+
+pipeline: "split"
+
+# =============================================================================
+# Common Settings (shared by split, dedup, shard)
+# =============================================================================
+
+# -- S3 profiles --
+input_s3_profile_name: "default"             # --input-s3-profile-name
+output_s3_profile_name: "default"            # --output-s3-profile-name
+
+# -- Execution --
+execution_mode: "BATCH"                      # --execution-mode [BATCH, STREAMING]
+limit: 0                                     # --limit  (0 = process all)
+verbose: false                               # --verbose
+# In-container mount point (Makefile maps host MODELS_DIR -> /config/models).
+# Keep as a literal path; the config loader does not expand env vars / ${VAR}.
+model_weights_path: "/config/models"         # --model-weights-path
+
+# -- Profiling --
+perf_profile: true                           # --perf-profile / --no-perf-profile
+profile_tracing: false                       # --profile-tracing
+profile_tracing_sampling: 0.01               # --profile-tracing-sampling  (0.0-1.0)
+profile_tracing_otlp_endpoint: ""            # --profile-tracing-otlp-endpoint  (OTLP HTTP collector)
+profile_cpu: false                           # --profile-cpu
+profile_memory: false                        # --profile-memory
+profile_gpu: false                           # --profile-gpu
+profile_cpu_exclude: "_root"                 # --profile-cpu-exclude  (comma-separated)
+profile_memory_exclude: "_root"              # --profile-memory-exclude
+profile_gpu_exclude: "_root"                 # --profile-gpu-exclude
+
+# =============================================================================
+# Input / Output
+# =============================================================================
+
+# Per-run paths: replace with your S3 URI or local host path. For local paths,
+# also pass DATA_DIR=<dir> to make so the host dir is bind-mounted into the container.
+input_video_path: "<YOUR_INPUT_PATH>"        # --input-video-path  (S3 URI or local path)
+output_clip_path: "<YOUR_OUTPUT_PATH>"       # --output-clip-path  (S3 URI or local path)
+input_video_list_json_path: null             # --input-video-list-json-path
+input_video_list_s3_profile_name: "default"  # --input-video-list-s3-profile-name
+input_presigned_s3_url: null                 # --input-presigned-s3-url
+output_presigned_s3_url: null                # --output-presigned-s3-url
+
+# =============================================================================
+# Feature Toggles
+# =============================================================================
+
+limit_clips: 0                               # --limit-clips  (0 = no limit)
+dry_run: false                               # --dry-run
+generate_embeddings: true                    # --no-generate-embeddings sets false
+generate_previews: false                     # --generate-previews
+generate_captions: true                      # --no-generate-captions sets false
+upload_clips: true                           # --no-upload-clips sets false
+upload_clip_info_in_lance: false             # --upload-clip-info-in-lance
+upload_clip_info_in_chunks: false            # --upload-clip-info-in-chunks
+upload_cds_parquet: false                    # --upload-cvds-parquet / --upload-cds-parquet
+generate_cosmos_predict_dataset: "disable"   # --generate-cosmos-predict-dataset [disable, predict2]
+write_all_caption_json: true                 # --no-write-all-caption-json sets false
+
+# =============================================================================
+# SAM3 Object Tracking + Per-Event Captioning
+# =============================================================================
+
+sam3: false                                  # --sam3 (NB: the YAML key must
+                                             # be `sam3:`, not `enable_sam3:`;
+                                             # see cosmos-curator argparse
+                                             # `--sam3` in
+                                             # cosmos_curator/pipelines/video/
+                                             # tracking/cli_args.py).
+sam3_prompts: null                           # --sam3-prompts  (e.g., ["a car", "a pedestrian"])
+sam3_target_fps: 10.0                        # --sam3-target-fps
+sam3_max_clip_duration_s: 30.0               # --sam3-max-clip-duration-s
+sam3_session_reset_s: 10.0                   # --sam3-session-reset-s
+sam3_region: "contour"                       # --sam3-region [box, contour]
+sam3_output_format: "native"                 # --sam3-output-format [native, coco, mot]
+sam3_score_threshold_detection: null         # --sam3-score-threshold-detection
+sam3_det_nms_thresh: null                    # --sam3-det-nms-thresh
+sam3_new_det_thresh: null                    # --sam3-new-det-thresh
+sam3_fill_hole_area: null                    # --sam3-fill-hole-area
+sam3_recondition_every_nth_frame: null       # --sam3-recondition-every-nth-frame
+sam3_recondition_on_trk_masks: null          # --sam3-recondition-on-trk-masks
+sam3_high_conf_thresh: null                  # --sam3-high-conf-thresh
+sam3_high_iou_thresh: null                   # --sam3-high-iou-thresh
+sam3_write_annotated_video: false            # --sam3-write-annotated-video
+sam3_annotated_video_trails: false           # --sam3-annotated-video-trails
+sam3_annotated_video_label_style: "id"       # --sam3-annotated-video-label-style [id, name, none]
+sam3_annotated_video_mask_opacity: 0         # --sam3-annotated-video-mask-opacity  (0-100)
+
+event_captioning: false                      # --event-captioning (requires sam3:true)
+event_caption_prompt: null                   # --event-caption-prompt
+event_caption_prompt_file: null              # --event-caption-prompt-file
+event_caption_backend: "qwen"                # --event-caption-backend [qwen, gemini]
+event_caption_qwen_variant: "qwen"           # --event-caption-qwen-variant [qwen, qwen3_vl_30b, qwen3_vl_30b_fp8]
+event_caption_qwen_sampling_fps: 2.0         # --event-caption-qwen-sampling-fps
+event_caption_qwen_fp8: false                # --event-caption-qwen-fp8
+event_caption_qwen_temperature: null         # --event-caption-qwen-temperature
+event_caption_qwen_top_p: null               # --event-caption-qwen-top-p
+event_caption_qwen_top_k: null               # --event-caption-qwen-top-k
+event_caption_gemini_model_name: "models/gemini-2.5-flash"  # --event-caption-gemini-model-name
+event_caption_gemini_fps: 4.0                # --event-caption-gemini-fps
+event_caption_gemini_media_resolution: "high"  # --event-caption-gemini-media-resolution [low, medium, high]
+event_caption_gemini_thinking_budget: -1     # --event-caption-gemini-thinking-budget
+event_caption_gemini_max_output_tokens: 16384  # --event-caption-gemini-max-output-tokens
+event_caption_openai_model_name: "auto"      # --event-caption-openai-model-name
+event_caption_openai_max_output_tokens: 8192  # --event-caption-openai-max-output-tokens
+event_caption_openai_max_retries: 3          # --event-caption-openai-max-retries
+event_caption_openai_retry_delay_seconds: 1.0  # --event-caption-openai-retry-delay-seconds
+event_caption_openai_endpoint_key: "caption"  # --event-caption-openai-endpoint-key [caption, enhance, filter, classifier]
+event_caption_vllm_async_sampling_fps: 2.0   # --event-caption-vllm-async-sampling-fps
+event_caption_vllm_async_max_output_tokens: 4096  # --event-caption-vllm-async-max-output-tokens
+
+# =============================================================================
+# Splitting Algorithm
+# =============================================================================
+
+splitting_algorithm: "transnetv2"            # --splitting-algorithm [fixed-stride, transnetv2]
+
+# -- Fixed-stride --
+fixed_stride_split_duration: 10              # --fixed-stride-split-duration  (seconds)
+fixed_stride_min_clip_length_s: 2            # --fixed-stride-min-clip-length-s  (seconds)
+
+# -- TransNetV2 --
+transnetv2_threshold: 0.4                   # --transnetv2-threshold  (0.0-1.0)
+transnetv2_min_length_s: 2.0               # --transnetv2-min-length-s  (seconds)
+transnetv2_min_length_frames: 48            # --transnetv2-min-length-frames
+transnetv2_max_length_s: 60.0              # --transnetv2-max-length-s  (seconds)
+transnetv2_max_length_mode: "stride"        # --transnetv2-max-length-mode [truncate, stride]
+transnetv2_crop_s: 0.5                     # --transnetv2-crop-s  (seconds)
+transnetv2_gpus_per_worker: 0.25           # --transnetv2-gpus-per-worker
+transnetv2_frame_decoder_mode: "ffmpeg_cpu" # --transnetv2-frame-decoder-mode [ffmpeg_cpu, pynvc]
+transnetv2_frame_decode_cpus_per_worker: 3.0  # --transnetv2-frame-decode-cpus-per-worker
+transnetv2_frame_decode_raise_on_pynvc_error: false  # --transnetv2-frame-decode-raise-on-pynvc-error
+
+# =============================================================================
+# Transcode
+# =============================================================================
+
+transcode_cpus_per_worker: 5.0              # --transcode-cpus-per-worker
+transcode_encoder: "libopenh264"            # --transcode-encoder [libopenh264, h264_nvenc]
+transcode_encoder_threads: 1                # --transcode-encoder-threads
+transcode_ffmpeg_batch_size: 16             # --transcode-ffmpeg-batch-size
+transcode_use_hwaccel: false                # --transcode-use-hwaccel
+transcode_use_input_video_bit_rate: false   # --transcode-use-input-video-bit-rate
+transcode_max_output_frames: null           # --transcode-max-output-frames  (null = no cap)
+clip_re_chunk_size: 32                      # --clip-re-chunk-size
+
+# =============================================================================
+# Super-Resolution (SeedVR2)
+# =============================================================================
+
+super_resolution: false                     # --super-resolution
+sr_variant: "seedvr2_7b"                   # --sr-variant [seedvr2_3b, seedvr2_7b, seedvr2_7b_sharp]
+sr_target_height: 720                      # --sr-target-height
+sr_target_width: 1280                      # --sr-target-width
+sr_window_frames: 128                      # --sr-window-frames
+sr_overlap_frames: 64                      # --sr-overlap-frames
+sr_no_blend_overlap: false                 # --sr-no-blend-overlap
+sr_seed: 666                               # --sr-seed
+sr_cfg_scale: 1.0                          # --sr-cfg-scale
+sr_cfg_rescale: 0.0                        # --sr-cfg-rescale
+sr_sample_steps: 1                         # --sr-sample-steps
+sr_sp_size: 1                              # --sr-sp-size
+sr_out_fps: null                           # --sr-out-fps  (null = preserve source)
+sr_tmp_dir: null                           # --sr-tmp-dir
+
+# =============================================================================
+# Motion Filter
+# =============================================================================
+
+motion_filter: "disable"                    # --motion-filter [disable, enable, score-only]
+motion_global_mean_threshold: 0.00098       # --motion-global-mean-threshold
+motion_per_patch_min_256_threshold: 0.000001  # --motion-per-patch-min-256-threshold
+motion_decode_target_fps: 2.0              # --motion-decode-target-fps
+motion_decode_target_duration_ratio: 0.5   # --motion-decode-target-duration-ratio
+motion_score_batch_size: 64                # --motion-score-batch-size
+motion_score_gpus_per_worker: 0.5          # --motion-score-gpus-per-worker  (0 = CPU)
+
+# =============================================================================
+# Frame Extraction & Aesthetic Filter
+# =============================================================================
+
+clip_extraction_target_res: -1             # --clip-extraction-target-res  (-1 = no resize)
+clip_extraction_cpus_per_worker: 3.0       # --clip-extraction-cpus-per-worker
+aesthetic_threshold: null                   # --aesthetic-threshold  (null = disabled)
+aesthetic_reduction: "min"                  # --aesthetic-reduction [mean, min]
+aesthetic_gpus_per_worker: 0.25            # --aesthetic-gpus-per-worker
+
+# =============================================================================
+# Artificial Text Filter
+# =============================================================================
+
+artificial_text_filter: "disable"          # --artificial-text-filter [disable, enable]
+artificial_text_frame_interval: 3          # --artificial-text-frame-interval
+artificial_text_gpus_per_worker: 0.25      # --artificial-text-gpus-per-worker
+artificial_text_use_corner_detection: true  # --no-artificial-text-corner-detection sets false
+artificial_text_ignore_corner_region: false # --ignore-artificial-text-corner-region
+artificial_text_corner_x_margin: 0.1       # --artificial-text-corner-x-margin
+artificial_text_corner_y_margin: 0.1       # --artificial-text-corner-y-margin
+artificial_text_min_duration_frames: 10    # --artificial-text-min-duration-frames
+artificial_text_corner_ratio: 0.1          # --artificial-text-corner-ratio
+artificial_text_stability_iou_threshold: 0.9  # --artificial-text-stability-iou-threshold
+artificial_text_detection_use_cpu: false    # --artificial-text-detection-use-cpu
+
+# =============================================================================
+# VLM Filter  (renamed from "Qwen Semantic Filter" in cosmos-curator v2.0.0)
+# =============================================================================
+
+vlm_filter: "disable"                      # --vlm-filter [enable, disable, score-only]
+vlm_filter_prompt_variant: "default"       # --vlm-filter-prompt-variant [default]
+vlm_filter_categories: null                # --vlm-filter-categories  (comma-separated)
+vlm_filter_rejection_threshold: 0.5        # --vlm-filter-rejection-threshold
+vlm_filter_batch_size: 16                  # --vlm-filter-batch-size
+vlm_filter_model_variant: "qwen"           # --vlm-filter-model-variant
+vlm_filter_fp8_enable: false               # --vlm-filter-fp8-enable
+vlm_filter_max_output_tokens: 512          # --vlm-filter-max-output-tokens
+vlm_filter_num_gpus: 1                      # --vlm-filter-num-gpus
+vlm_filter_endpoint: "local"               # --vlm-filter-endpoint [local, openai, gemini]
+vlm_filter_openai_model_name: "auto"       # --vlm-filter-openai-model-name
+vlm_filter_openai_retries: 3               # --vlm-filter-openai-retries
+vlm_filter_openai_retry_delay_seconds: 1.0  # --vlm-filter-openai-retry-delay-seconds
+vlm_filter_gemini_model_name: "models/gemini-2.5-pro"  # --vlm-filter-gemini-model-name
+vlm_filter_gemini_retries: 3               # --vlm-filter-gemini-retries
+vlm_filter_gemini_retry_delay_seconds: 1.0  # --vlm-filter-gemini-retry-delay-seconds
+
+# =============================================================================
+# Video Classifier  (renamed from "Qwen Video Classifier" in cosmos-curator v2.0.0;
+# the on/off field is now boolean instead of "enable"/"disable")
+# =============================================================================
+
+video_classifier: false                    # --video-classifier / --no-video-classifier
+video_classifier_use_custom_categories: false  # --video-classifier-use-custom-categories
+video_classifier_allow: null               # --video-classifier-allow  (repeatable)
+video_classifier_block: null               # --video-classifier-block  (repeatable)
+video_classifier_allow_file: null          # --video-classifier-allow-file  (newline-separated .txt path)
+video_classifier_block_file: null          # --video-classifier-block-file  (newline-separated .txt path)
+video_classifier_rejection_threshold: 0.5  # --video-classifier-rejection-threshold
+video_classifier_batch_size: 16            # --video-classifier-batch-size
+video_classifier_model_variant: "qwen"     # --video-classifier-model-variant
+video_classifier_fp8_enable: false         # --video-classifier-fp8-enable
+video_classifier_max_output_tokens: 512    # --video-classifier-max-output-tokens
+video_classifier_num_gpus: 1               # --video-classifier-num-gpus
+video_classifier_endpoint: "local"         # --video-classifier-endpoint [local, openai, gemini]
+video_classifier_openai_model_name: "auto"  # --video-classifier-openai-model-name
+video_classifier_openai_retries: 3         # --video-classifier-openai-retries
+video_classifier_openai_retry_delay_seconds: 1.0  # --video-classifier-openai-retry-delay-seconds
+video_classifier_gemini_model_name: "models/gemini-2.5-pro"  # --video-classifier-gemini-model-name
+video_classifier_gemini_retries: 3         # --video-classifier-gemini-retries
+video_classifier_gemini_retry_delay_seconds: 1.0  # --video-classifier-gemini-retry-delay-seconds
+
+# =============================================================================
+# Embedding
+# =============================================================================
+
+embedding_algorithm: "internvideo2"        # --embedding-algorithm [cosmos-embed1-224p, cosmos-embed1-336p, cosmos-embed1-448p, internvideo2, openai]
+embedding_gpus_per_worker: 0.25            # --embedding-gpus-per-worker
+embedding_batch_size: 8                    # --embedding-batch-size
+openai_embedding_model_name: "auto"        # --openai-embedding-model-name
+openai_embedding_retries: 3               # --openai-embedding-retries
+openai_embedding_retry_delay_seconds: 1.0  # --openai-embedding-retry-delay-seconds
+openai_embedding_max_concurrent_requests: 8  # --openai-embedding-max-concurrent-requests
+
+# =============================================================================
+# Captioning -- General
+# =============================================================================
+
+captioning_algorithm: "qwen3_vl_30b_fp8"   # --captioning-algorithm [cosmos_r1, cosmos_r2, gemini, nemotron, openai, qwen, qwen3_5_27b, qwen3_6_27b, qwen3_6_27b_fp8, qwen3_vl_30b, qwen3_vl_30b_fp8, qwen3_vl_235b, qwen3_vl_235b_fp8, vllm_async]
+captioning_window_size: 256                # --captioning-window-size
+captioning_remainder_threshold: 128        # --captioning-remainder-threshold
+captioning_prompt_variant: "default"       # --captioning-prompt-variant [default, av]
+captioning_prompt_text: null               # --captioning-prompt-text  (custom prompt string)
+captioning_sampling_fps: 2.0               # --captioning-sampling-fps
+captioning_max_output_tokens: 8192         # --captioning-max-output-tokens
+captioning_setup_attempts: 1               # --captioning-setup-attempts  (vLLM caption stage setup() retries)
+api_caption_batch_size: 8                  # --api-caption-batch-size  (OpenAI/Gemini concurrency limit)
+caption_quality_flags_enabled: true        # --no-caption-quality-flags-enabled sets false
+caption_quality_stats_enabled: true        # --no-caption-quality-stats-enabled sets false
+
+# =============================================================================
+# Captioning -- Gemini Backend
+# =============================================================================
+
+gemini_model_name: "models/gemini-2.5-pro" # --gemini-model-name
+gemini_caption_retries: 3                  # --gemini-caption-retries
+gemini_retry_delay_seconds: 1.0            # --gemini-retry-delay-seconds
+gemini_max_inline_mb: 20.0                 # --gemini-max-inline-mb  (MB)
+
+# =============================================================================
+# Captioning -- OpenAI Backend
+# =============================================================================
+
+openai_model_name: "auto"                  # --openai-model-name
+openai_caption_retries: 3                  # --openai-caption-retries
+openai_retry_delay_seconds: 1.0            # --openai-retry-delay-seconds
+
+# =============================================================================
+# Captioning -- Qwen Backend
+# =============================================================================
+
+qwen_preprocess_dtype: "float16"           # --qwen-preprocess-dtype [float32, float16, bfloat16, uint8]
+qwen_model_does_preprocess: false          # --qwen-model-does-preprocess
+qwen_stage2_caption: false                 # --qwen-stage2-caption
+qwen_stage2_prompt_text: null              # --qwen-stage2-prompt-text
+qwen_batch_size: 8                         # --qwen-batch-size
+qwen_use_vllm_mmcache: false               # --qwen-use-vllm-mmcache
+qwen_use_fp8_weights: false                # --qwen-use-fp8-weights
+qwen_num_gpus_per_worker: 1               # --qwen-num-gpus-per-worker
+
+# =============================================================================
+# vLLM -- General
+# =============================================================================
+
+vllm_prepare_num_cpus_per_worker: 3.0      # --vllm-prepare-num-cpus-per-worker
+vllm_performance_mode: "throughput"        # --vllm-performance-mode [balanced, interactivity, throughput]
+vllm_use_inflight_batching: true           # --vllm-use-inflight-batching / --no-...
+vllm_max_retries: 3                        # --vllm-max-retries
+vllm_video_max_pixels_per_frame: null      # --vllm-video-max-pixels-per-frame  (null = default budget)
+copy_weights_to: null                      # --copy-weights-to  (null = no copy)
+
+# =============================================================================
+# vLLM -- Sampling Parameters
+# =============================================================================
+
+vllm_sampling_temperature: 0.1            # --vllm-sampling-temperature
+vllm_sampling_top_p: 0.001                # --vllm-sampling-top-p
+vllm_sampling_top_k: 0                    # --vllm-sampling-top-k  (0 = disabled)
+vllm_sampling_repetition_penalty: 1.05    # --vllm-sampling-repetition-penalty
+vllm_sampling_presence_penalty: 0.0       # --vllm-sampling-presence-penalty
+vllm_sampling_frequency_penalty: 0.0      # --vllm-sampling-frequency-penalty
+vllm_sampling_min_p: 0.0                  # --vllm-sampling-min-p
+vllm_sampling_min_tokens: 16              # --vllm-sampling-min-tokens
+
+# NOTE: The explicit `vllm_async_*` engine knobs were removed in cosmos-curator
+# v2.0.0. `vllm_async` remains a valid `captioning_algorithm`, but it is now
+# configured via the general `vllm_*` / `captioning_*` args above plus
+# `api_caption_batch_size` and the `event_caption_vllm_async_*` keys.
+
+# =============================================================================
+# Enhance Captions / MCQ Generation
+# =============================================================================
+
+enhance_captions: true                     # --enhance-captions
+enhance_captions_lm_variant: "qwen_lm"    # --enhance-captions-lm-variant [qwen_lm, gpt_oss_20b, openai]
+enhance_captions_openai_model: "auto"      # --enhance-captions-openai-model
+enhance_captions_prompt_variant: "default" # --enhance-captions-prompt-variant [default, av]
+enhance_captions_prompt_text: null         # --enhance-captions-prompt-text
+enhance_captions_max_output_tokens: 2048   # --enhance-captions-max-output-tokens
+enhance_captions_batch_size: 32            # --enhance-captions-batch-size
+qwen_lm_use_fp8_weights: false            # --qwen-lm-use-fp8-weights
+nemotron_stage2_caption: false             # --nemotron-stage2-caption
+
+# =============================================================================
+# Preview Generation
+# =============================================================================
+
+preview_target_fps: 1                      # --preview-target-fps
+preview_target_height: 240                 # --preview-target-height
+
+# =============================================================================
+# Workers
+# =============================================================================
+
+num_download_workers_per_node: 4           # --num-download-workers-per-node
+num_clip_writer_workers_per_node: 8        # --num-clip-writer-workers-per-node
+
+# =============================================================================
+# Multi-Camera
+# =============================================================================
+
+multi_cam: false                           # --multi-cam
+primary_camera_keyword: "front"            # --primary-camera-keyword
+
+# =============================================================================
+# Debug
+# =============================================================================
+
+debug_save_vllm_frames: false              # --debug-save-vllm-frames
+
+# =============================================================================
+# Stage Replay
+# =============================================================================
+
+stage_save: []                             # --stage-save  (comma-separated stage names)
+stage_save_sample_rate: 0.0                # --stage-save-sample-rate  (0.0-1.0)
+stage_replay: []                           # --stage-replay  (comma-separated stage names)
+stage_compare: []                          # --stage-compare  (comma-separated stage names)
+stage_compare_path: null                   # --stage-compare-path  (golden task pickle base path)
+stage_compare_atol: 0.0                    # --stage-compare-atol
+stage_compare_pass_threshold: 1.0          # --stage-compare-pass-threshold
+stage_compare_backend: "xenna"             # --stage-compare-backend [xenna, serial]

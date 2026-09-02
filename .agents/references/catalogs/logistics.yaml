@@ -1,0 +1,176 @@
+domain: logistics and distribution operations
+baseline_event: normal logistics operations
+
+keywords:
+  - logistics
+  - delivery
+  - loading
+  - unloading
+  - cargo
+  - freight
+  - distribution
+  - supply chain
+  - shipping container
+  - trailer
+  - semi-truck
+  - delivery truck
+  - dispatch
+  - sorting
+  - package
+  - dock
+  - cross-dock
+  - yard
+  - truck yard
+  - staging
+  - pallet
+  - forklift
+  - conveyor
+  - roller bed
+  - container
+  - intermodal
+  - last mile
+
+events:
+  critical:
+    # powered industrial truck -- OSHA 1910.178
+    - forklift collision with pedestrian
+    - forklift collision with another vehicle
+    - forklift collision with rack or structure
+    - forklift tip-over with operator
+    # dock zone -- highest-injury area in logistics
+    - worker crushed between dock and trailer
+    - worker fall from loading dock edge
+    - trailer rollback crushing worker at dock
+    - truck dock collision with structure
+    # falls
+    - worker fall from height
+    - worker fall from top of container or trailer
+    # struck-by
+    - worker struck by falling cargo
+    - worker struck by moving vehicle in yard
+    # fire / hazmat
+    - fire or explosion in facility
+    - hazardous material spill or release
+    # vehicle
+    - truck rollover in yard
+    - pallet jack rollover with operator
+
+  serious:
+    # dock operations
+    - trailer creep or separation during loading
+    - dock plate or leveler failure
+    - dock door failure on person or cargo
+    - vehicle rollback at dock without injury
+    # cargo handling
+    - pallet collapse or load shift
+    - falling cargo from conveyor or chute
+    - unsecured load falling from truck bed
+    # conveyor / automation
+    - conveyor belt entanglement or jam
+    - automated guided vehicle collision
+    - sortation system jam with worker intervention
+    # vehicle
+    - truck-to-truck collision in yard
+    - trailer swing during coupling
+    # response
+    - emergency response on site
+
+  moderate:
+    # PIT violations
+    - forklift speeding in facility
+    - forklift operating with obstructed view
+    - forklift carrying raised load while moving
+    - pedestrian in forklift exclusion zone
+    - worker riding on forklift forks or load
+    - forklift left running unattended
+    # PPE / ergonomic
+    - worker without required ppe
+    - unsafe manual lifting technique
+    - worker performing repetitive motion without rotation
+    # dock violations
+    - trailer not chocked or wheel-restrained at dock
+    - dock plate deployed without trailer present
+    - unsecured load on truck or trailer
+    # housekeeping
+    - blocked emergency exit or fire lane
+    - overloaded pallet or rack beyond rated capacity
+    - missing floor markings or safety signage
+
+  low:
+    - person and moving equipment pass within unsafe proximity without contact
+    - congestion in aisle or staging area
+    - spill or wet surface on floor
+    - damaged packaging or product
+    - equipment left unattended
+    - improper material stacking
+    - weather hazard at outdoor staging area
+    - yard congestion or trailer gridlock
+    - debris in travel lane or walkway
+    # compliance / workers-comp liability events (formerly "liability" tier)
+    - slip trip or fall on wet or uneven surface
+    - worker injury from repetitive strain
+    - ergonomic violation at workstation
+    - unauthorized personnel in restricted area
+    - worker servicing equipment without visible lockout tagout device
+    - driver exiting cab while truck wheels are not visibly chocked
+    - smoking in prohibited area
+    - food or drink in chemical storage area
+    - worker operating equipment without certification
+
+remap:
+  # forklift aliases
+  forklift accident: forklift collision with rack or structure
+  forklift crash: forklift collision with rack or structure
+  forklift hits person: forklift collision with pedestrian
+  forklift hits worker: forklift collision with pedestrian
+  forklift rollover: forklift tip-over with operator
+  forklift overturn: forklift tip-over with operator
+  # fall aliases
+  fall from dock: worker fall from loading dock edge
+  fall from height: worker fall from height
+  fall from container: worker fall from top of container or trailer
+  fall from trailer: worker fall from top of container or trailer
+  worker fall: worker fall from height
+  # dock aliases
+  loading accident: trailer creep or separation during loading
+  dock accident: trailer creep or separation during loading
+  trailer drift: trailer creep or separation during loading
+  trailer separation: trailer creep or separation during loading
+  # struck-by aliases
+  cargo fall: worker struck by falling cargo
+  falling cargo: worker struck by falling cargo
+  worker injury: worker struck by falling cargo
+  hit by truck: worker struck by moving vehicle in yard
+  # hazmat aliases
+  chemical spill: hazardous material spill or release
+  hazmat spill: hazardous material spill or release
+  product spill: hazardous material spill or release
+  # cargo aliases
+  rack collapse: pallet collapse or load shift
+  pallet drop: pallet collapse or load shift
+  load shift: pallet collapse or load shift
+  # violation aliases
+  safety violation: worker without required ppe
+  ppe violation: worker without required ppe
+  pedestrian hazard: pedestrian in forklift exclusion zone
+  near miss incident: person and moving equipment pass within unsafe proximity without contact
+  equipment near miss: person and moving equipment pass within unsafe proximity without contact
+  blocked exit: blocked emergency exit or fire lane
+  # equipment aliases
+  equipment malfunction: dock plate or leveler failure
+  conveyor jam: conveyor belt entanglement or jam
+  agv collision: automated guided vehicle collision
+  amr collision: automated guided vehicle collision
+  # liability aliases
+  loto violation: worker servicing equipment without visible lockout tagout device
+  lockout tagout: worker servicing equipment without visible lockout tagout device
+  slip and fall: slip trip or fall on wet or uneven surface
+  repetitive strain: worker injury from repetitive strain
+
+excluded:
+  - video artifact or glitch
+  - camera malfunction
+  - unknown
+  - other
+  - routine maintenance
+  - scheduled delivery

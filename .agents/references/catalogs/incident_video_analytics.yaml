@@ -1,0 +1,170 @@
+domain: facility incident analytics
+baseline_event: normal scene activity
+
+keywords:
+  - cctv
+  - facility camera
+  - facility staff
+  - guard
+  - fence
+  - gate
+  - perimeter
+  - restricted area
+  - trespassing
+  - intrusion
+  - alarm
+  - access control
+  - badge
+  - patrol
+  - lobby
+  - corridor
+  - stairwell
+  - elevator
+  - campus
+  - facility
+  - compound
+  - checkpoint
+  - turnstile
+  - mantrap
+
+events:
+  critical:
+    # violence / weapons (observable)
+    - armed robbery in progress
+    - physical assault or battery
+    - aggravated assault with weapon
+    - stabbing or edged weapon attack
+    - shooting or firearm discharge
+    - active shooter or attacker
+    - hostage situation
+    - kidnapping or abduction
+    # mass-casualty / structural
+    - vehicle ramming attack
+    - explosion or improvised device detonation
+    - arson with persons present
+
+  serious:
+    # forced entry / taking property (observable)
+    - burglary or forced entry in progress
+    - carjacking
+    - street robbery or purse snatching
+    - smash and grab raid
+    # weapons / substances
+    - weapon brandishing or display
+    - concealed weapon detected
+    - drug dealing or exchange
+    - drug use in public area
+    # other serious
+    - hit and run incident
+    - deliberate arson without persons present
+    - large-scale vandalism or destruction
+    # response
+    - police arrival on scene
+    - person detention or arrest
+    - emergency medical response
+    - fire department response
+    - facility staff intervention or patrol
+    - evacuation in progress
+    - scene investigation in progress
+    - bomb squad or hazmat response
+
+  moderate:
+    # property / access
+    - retail merchandise removal without payment
+    - pickpocketing
+    - vehicle break-in or taking from vehicle
+    - bicycle or scooter taken
+    - package taken from doorstep or lobby
+    - vandalism or graffiti
+    - trespassing in restricted area
+    - fence climbing or barrier breach
+    - tailgating through secured entrance
+    - forced door or lock tampering
+    - unauthorized access badge use
+    # public order
+    - public intoxication disturbance
+    - aggressive panhandling or verbal abuse
+    - illegal dumping or littering
+    - indecent exposure
+    # equipment tampering
+    - tampering with facility camera
+    - tampering with alarm or sensor
+
+  low:
+    # pre-incident visual indicators
+    - person lingering or prolonged observation
+    - person photographing access points or cameras
+    - unusual vehicle circling area repeatedly
+    - unattended bag or unmarked package
+    - person concealing face or appearance
+    - after hours unauthorized presence
+    - drone flying near facility
+    # disturbance
+    - verbal altercation or argument
+    - crowd gathering or forming
+    - disorderly conduct
+    # minor
+    - illegal parking or blocking access
+    - sleeping or camping on premises
+    - animal intrusion on premises
+
+remap:
+  fighting: physical assault or battery
+  assault: physical assault or battery
+  battery: physical assault or battery
+  beating: physical assault or battery
+  stabbing: stabbing or edged weapon attack
+  knife attack: stabbing or edged weapon attack
+  shooting: shooting or firearm discharge
+  gunshot: shooting or firearm discharge
+  gunfire: shooting or firearm discharge
+  mass shooting: active shooter or attacker
+  holdup: armed robbery in progress
+  stickup: armed robbery in progress
+  mugging: street robbery or purse snatching
+  purse snatching: street robbery or purse snatching
+  break-in: burglary or forced entry in progress
+  breaking and entering: burglary or forced entry in progress
+  forced entry: burglary or forced entry in progress
+  bike taken: bicycle or scooter taken
+  porch pirate: package taken from doorstep or lobby
+  package removal: package taken from doorstep or lobby
+  graffiti: vandalism or graffiti
+  tagging: vandalism or graffiti
+  trespassing: trespassing in restricted area
+  intrusion: trespassing in restricted area
+  unauthorized entry: trespassing in restricted area
+  fence breach: fence climbing or barrier breach
+  perimeter breach: fence climbing or barrier breach
+  piggybacking: tailgating through secured entrance
+  drug transaction: drug dealing or exchange
+  drug use: drug use in public area
+  explosion: explosion or improvised device detonation
+  kidnapping: kidnapping or abduction
+  abduction: kidnapping or abduction
+  police activity: police arrival on scene
+  arrest: person detention or arrest
+  police response: police arrival on scene
+  fire response: fire department response
+  ems response: emergency medical response
+  staff response: facility staff intervention or patrol
+  evacuation: evacuation in progress
+  unusual person: person lingering or prolonged observation
+  unusual activity: person lingering or prolonged observation
+  abandoned bag: unattended bag or unmarked package
+  unmarked package: unattended bag or unmarked package
+  hit and run: hit and run incident
+  camera tampering: tampering with facility camera
+  loitering: person lingering or prolonged observation
+  person camping: sleeping or camping on premises
+  person sleeping on site: sleeping or camping on premises
+
+excluded:
+  - video artifact or glitch
+  - camera malfunction
+  - unknown
+  - other
+  - normal weather
+  - routine maintenance
+  - scheduled patrol
+  - authorized delivery

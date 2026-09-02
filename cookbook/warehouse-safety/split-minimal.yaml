@@ -1,0 +1,49 @@
+# =============================================================================
+# Warehouse Safety -- Minimal first-run split (overrides only)
+# =============================================================================
+# Split + InternVideo2 embeddings only. No captioning, classifier, SAM3,
+# caption enhance, or super-resolution. Use this for Path A first-run / smoke.
+# Full kitchen-sink recipe: split.yaml in this directory.
+#
+# Input: DATA_DIR/videos. Shipped first-run clip is SDG-Warehouse-01.mp4
+# (~25 s). limit: 1 processes the first file in that directory (01 sorts first).
+# Do not mix this recipe with SQA execution.
+#
+# All omitted keys fall back to parser defaults.
+# See configs/split.yaml for the full reference.
+# =============================================================================
+
+pipeline: "split"
+
+# -- I/O (under DATA_DIR, mounted at /data) --
+input_video_path: /data/videos
+output_clip_path: /data/output/split-minimal
+model_weights_path: "/config/models"
+
+# -- Splitting: 10 s stride covers the ~25 s smoke clip in a few windows --
+splitting_algorithm: "fixed-stride"
+fixed_stride_split_duration: 10
+fixed_stride_min_clip_length_s: 2.0
+limit: 1
+
+# -- First-run: skip VLM/LLM stages --
+generate_captions: false
+enhance_captions: false
+video_classifier: false
+motion_filter: "disable"
+aesthetic_threshold: null
+vlm_filter: "disable"
+# Curator treats this option as a boolean flag; string "disable" is truthy.
+artificial_text_filter: false
+sam3: false
+event_captioning: false
+super_resolution: false
+
+# -- Embedding (Path C handoff producer) --
+generate_embeddings: true
+embedding_algorithm: "internvideo2"
+embedding_batch_size: 4
+
+upload_clips: true
+write_all_caption_json: false
+perf_profile: false

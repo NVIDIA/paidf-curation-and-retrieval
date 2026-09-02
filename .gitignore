@@ -1,0 +1,147 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+*.log
+logs/
+*.out
+
+# Output directories
+pipeline_output/
+mcq_outputs/
+*.mp4
+*.avi
+*.mkv
+*.mov
+# Cookbook sample clips come from NGC, not git. Keep run output ignored.
+cookbook/**/videos/*.mp4
+cookbook/**/output/
+/01_chunks/
+/metas/
+
+# Model files (too large for git)
+models/
+*.safetensors
+*.bin
+*.pt
+*.pth
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+.cache/
+.cursor/
+.external/
+# Upstream Dataset Search (CDS) source — pull image only; do not vendor
+cds/
+deploy/cds/
+# Docker
+.dockerignore
+
+# Config files with sensitive data
+configs/my_config.sh
+configs/*_private.sh
+configs/s3_config.env
+*.env
+local.env
+
+# System
+.fuse_hidden*
+.directory
+.Trash-*
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# Data files
+*.csv
+*.parquet
+*.json.gz
+
+# KPI Evaluation Data (local only, not for git)
+.kpi_eval_data/
+
+# Large files
+*.tar
+*.tar.gz
+*.zip
+*.7z
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# Debug files
+debug/
+debug_frames/
+
+# Archived scripts (superseded/redundant scripts kept for reference)
+_archive/
+*/_archive/
+
+# User-specific/environment-specific configs (not tracked)
+configs/pipeline_config_LV.yaml
+configs/screening_LV.yaml
+configs/*_LV.yaml
+configs/*_kpi_eval.yaml
+# Coverage Data
+.coverage
+
+# Pytest
+.pytest_cache/
+runs/
+
+# Local SQA bundles/evidence copies. Keep release-controlled SQA packages out of
+# ordinary product commits unless explicitly promoted into tracked source.
+/SQA/
+/SQA_v*/
+/sqa_data/
+/osrb_audit/
+
+# Local-only E2E acceptance test harness (cosmos-curator container smoke tests).
+# Driver scripts and fixtures are user-specific; do not track.
+/E2E-test/
+
+/docs/plc/
+
+# Local Claude Code files: keep settings/local state untracked, but DO track the
+# skills symlink so Claude Code discovers the canonical top-level skills/ dir.
+.claude/*
+!.claude/skills

@@ -1,0 +1,26 @@
+# =============================================================================
+# Warehouse Safety -- Shard Config (overrides only)
+# =============================================================================
+# 500 MB tar archives, dedup-filtered.
+# See configs/shard.yaml for the full reference.
+# =============================================================================
+
+pipeline: "shard"
+
+# -- I/O (under DATA_DIR, mounted at /data; input = split output, dedup = dedup output) --
+input_clip_path: /data/output/split
+output_dataset_path: /data/output/shard
+model_weights_path: "/config/models"
+
+# -- Captioning algorithm must match the split stage --
+captioning_algorithm: "qwen3_vl_30b_fp8"
+
+# -- Dedup integration --
+input_semantic_dedup_path: /data/output/dedup
+semantic_dedup_epsilon: 0.01
+
+# -- Tar sizing --
+target_tar_size_mb: 500
+max_tars_per_part: 100
+min_clips_per_tar: 1
+drop_small_shards: false

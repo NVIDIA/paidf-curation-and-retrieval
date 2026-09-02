@@ -1,0 +1,14 @@
+# TAO Toolkit DS — tmm nearest_neighbors experiment
+# Paths are inside the container mount at /data (host DATA_DIR).
+#
+# Run:
+#   make run-data-mining-select \
+#     DATA_DIR=$PWD/data/nearest-neighbor-mining \
+#     TMM_CONFIG_FILE=cookbook/nearest-neighbor-mining/tmm.yaml
+
+source_parquet: /data/B.parquet
+target_parquet: /data/S.parquet
+output_parquet: /data/out/mined.parquet
+topn: 5
+knn_metric: cosine
+filter_by_label: "false"

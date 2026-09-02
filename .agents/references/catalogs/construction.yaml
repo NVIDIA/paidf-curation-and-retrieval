@@ -1,0 +1,147 @@
+domain: construction site safety
+baseline_event: normal construction activity
+
+keywords:
+  - construction
+  - crane
+  - scaffolding
+  - scaffold
+  - excavator
+  - bulldozer
+  - backhoe
+  - loader
+  - hard hat
+  - helmet
+  - high-vis vest
+  - trench
+  - concrete
+  - rebar
+  - building site
+  - demolition
+  - excavation
+  - heavy equipment
+  - boom lift
+  - aerial lift
+  - man lift
+  - pile driver
+  - formwork
+  - steel beam
+  - welding
+  - cutting torch
+  - compactor
+
+events:
+  critical:
+    # OSHA Fatal Four -- account for ~60% of construction fatalities
+    # 1. Falls (33.5%)
+    - worker fall from scaffolding
+    - worker fall from roof or elevated surface
+    - worker fall from ladder
+    - worker fall into excavation or opening
+    # 2. Struck-by (11.1%)
+    - worker struck by falling object or material
+    - worker struck by swinging crane load
+    - worker struck by moving heavy equipment
+    - worker struck by vehicle on site
+    # 3. Electrocution (8.5%)
+    - electrocution from contact with power line
+    - electrocution from energized equipment
+    # 4. Caught-in/between (5.5%)
+    - worker caught in or between equipment
+    - trench or excavation collapse on worker
+    # structural / catastrophic
+    - structural collapse during construction
+    - crane collapse or failure
+    - scaffolding collapse
+    - fire or explosion on site
+
+  serious:
+    # near-fatal / high-injury
+    - crane load drop without strike
+    - heavy equipment tip-over
+    - scaffolding partial failure or shift
+    - formwork or shoring failure
+    - falling debris from upper level
+    - excavation wall sloughing
+    - boom lift or aerial lift tip-over
+    # response
+    - emergency response on site
+    - site evacuation in progress
+
+  moderate:
+    # PPE violations -- OSHA 1926.100, 1926.102, 1926.502
+    - worker without hard hat in active zone
+    - worker without fall protection at height
+    - worker without high-visibility vest near traffic
+    - worker without eye or face protection during cutting
+    # equipment operation violations
+    - heavy equipment operating near unprotected edge
+    - crane operating beyond rated capacity
+    - equipment operating near overhead power lines
+    - unsecured materials at height
+    # housekeeping / access
+    - missing guardrail or barricade at edge
+    - missing trench shoring or protective system
+    - unauthorized person in active work zone
+    - blocked emergency access route
+    # hot work
+    - welding or cutting without fire watch
+    - hot work near combustible materials
+
+  low:
+    - near miss incident
+    - debris or material in walkway
+    - congestion in work zone
+    - equipment left running unattended
+    - improper material storage or stacking
+    - inadequate site lighting for work conditions
+    - weather hazard affecting operations
+    - missing or damaged safety signage
+
+remap:
+  # fall aliases
+  fall from height: worker fall from roof or elevated surface
+  worker fall: worker fall from roof or elevated surface
+  fall from scaffold: worker fall from scaffolding
+  fall from ladder: worker fall from ladder
+  fall into trench: worker fall into excavation or opening
+  fall into hole: worker fall into excavation or opening
+  # struck-by aliases
+  falling object: worker struck by falling object or material
+  hit by crane load: worker struck by swinging crane load
+  hit by equipment: worker struck by moving heavy equipment
+  hit by vehicle: worker struck by vehicle on site
+  # electrocution aliases
+  electrocution: electrocution from contact with power line
+  electric shock: electrocution from energized equipment
+  power line contact: electrocution from contact with power line
+  # caught-in aliases
+  caught in equipment: worker caught in or between equipment
+  pinch point: worker caught in or between equipment
+  trench collapse: trench or excavation collapse on worker
+  excavation cave-in: trench or excavation collapse on worker
+  # structural aliases
+  collapse: structural collapse during construction
+  crane failure: crane collapse or failure
+  crane accident: crane collapse or failure
+  scaffold failure: scaffolding collapse
+  scaffolding accident: scaffolding collapse
+  # PPE aliases
+  safety violation: worker without hard hat in active zone
+  ppe violation: worker without hard hat in active zone
+  no hard hat: worker without hard hat in active zone
+  no harness: worker without fall protection at height
+  missing fall protection: worker without fall protection at height
+  # other aliases
+  fire: fire or explosion on site
+  equipment tip-over: heavy equipment tip-over
+  equipment rollover: heavy equipment tip-over
+  blocked exit: blocked emergency access route
+
+excluded:
+  - video artifact or glitch
+  - camera malfunction
+  - unknown
+  - other
+  - routine survey
+  - normal delivery

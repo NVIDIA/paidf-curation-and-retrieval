@@ -1,0 +1,68 @@
+# =============================================================================
+# Cosmos-Curator Dedup Pipeline -- Full Reference Config
+# =============================================================================
+# Flat YAML consumed directly by upstream cosmos-curator load_pipeline_config.
+# Keys are argparse dest names (snake_case). Omitted keys get parser defaults.
+#
+# Run:
+#   make run-pipeline CONFIG_FILE=configs/dedup.yaml
+#
+# Or inside the container:
+#   pixi run -e default --as-is python -m cosmos_curator.pipelines.video.run_pipeline /config/dedup.yaml
+# =============================================================================
+
+pipeline: "dedup"
+
+# =============================================================================
+# Common Settings (shared by split, dedup, shard)
+# =============================================================================
+
+# -- S3 profiles --
+input_s3_profile_name: "default"             # --input-s3-profile-name
+output_s3_profile_name: "default"            # --output-s3-profile-name
+
+# -- Execution --
+execution_mode: "BATCH"                      # --execution-mode [BATCH, STREAMING]
+limit: 0                                     # --limit  (0 = process all)
+verbose: false                               # --verbose
+# In-container mount point (Makefile maps host MODELS_DIR -> /config/models).
+# Keep as a literal path; the config loader does not expand env vars / ${VAR}.
+model_weights_path: "/config/models"         # --model-weights-path
+
+# -- Profiling --
+perf_profile: true                           # --perf-profile / --no-perf-profile
+profile_tracing: false                       # --profile-tracing
+profile_cpu: false                           # --profile-cpu
+profile_memory: false                        # --profile-memory
+profile_gpu: false                           # --profile-gpu
+profile_cpu_exclude: "_root"                 # --profile-cpu-exclude
+profile_memory_exclude: "_root"              # --profile-memory-exclude
+profile_gpu_exclude: "_root"                 # --profile-gpu-exclude
+
+# =============================================================================
+# Dedup-Specific Settings
+# =============================================================================
+
+# Path to the split pipeline output containing embeddings.
+# Can be either output_clip_path from split (directory with summary.json and
+# iv2_embd_parquet/, ce1_embd_<variant>_parquet/, or openai_embd_parquet/)
+# or a directory with embedding parquet files containing id & embedding columns.
+# S3 URI or local host path. For local paths, also pass DATA_DIR=<dir> to make
+# so the host dir is bind-mounted into the container.
+input_embeddings_path: "<YOUR_SPLIT_OUTPUT_PATH>"  # --input-embeddings-path  (REQUIRED)
+
+# Directory for dedup output (duplicate ID lists, cluster assignments)
+output_path: "<YOUR_DEDUP_OUTPUT_PATH>"      # --output-path  (REQUIRED)
+
+# Number of K-means clusters
+n_clusters: 4                                # --n-clusters
+
+# Maximum K-means iterations
+max_iter: 100                                # --max-iter
+
+# Random seed for reproducibility
+random_state: 42                             # --random-state
+
+# Epsilon for deduplication extraction.
+# Clips with cosine similarity >= (1 - eps) are considered duplicates.
+eps_to_extract: 0.01                         # --eps-to-extract

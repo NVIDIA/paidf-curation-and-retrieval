@@ -1,0 +1,132 @@
+domain: traffic safety
+baseline_event: normal traffic flow
+
+keywords:
+  - intersection
+  - traffic
+  - traffic light
+  - traffic signal
+  - crosswalk
+  - road
+  - highway
+  - freeway
+  - lane
+  - vehicle
+  - car
+  - truck
+  - motorcycle
+  - scooter
+  - bicycle
+  - pedestrian
+  - sedan
+  - bus
+  - taxi
+  - driving
+  - street
+  - urban road
+  - roundabout
+  - overpass
+  - underpass
+  - shoulder
+  - ramp
+  - median
+
+events:
+  critical:
+    # active collisions
+    - vehicle-to-vehicle collision
+    - vehicle-to-pedestrian collision
+    - vehicle-to-cyclist collision
+    - vehicle-to-infrastructure collision
+    - multi-vehicle pileup
+    - motorcycle or scooter crash
+    - solo vehicle crash
+    # persons / vulnerable road users
+    - pedestrian fall or injury
+    - cyclist fall or injury
+    - person on ground in roadway
+    # vehicle-level critical
+    - vehicle rollover
+    - vehicle fire or explosion
+    - cargo spill on roadway
+
+  serious:
+    # post-incident
+    - collision aftermath
+    - emergency vehicle response
+    - medical response on scene
+    - traffic officer directing traffic
+    - road rescue or towing operation
+    # stalled / disabled
+    - stalled vehicle in travel lane
+    - stalled vehicle on shoulder
+
+  moderate:
+    # traffic violations
+    - red light violation
+    - wrong-way driving
+    - illegal U-turn
+    - illegal lane change
+    - speeding
+    - reckless lane change or weaving
+    # obstructions
+    - vehicle stopped in travel lane
+    - illegal parking blocking traffic
+    - vehicle on sidewalk
+    # pedestrian / cyclist violations
+    - pedestrian jaywalking
+    - pedestrian in vehicle lane
+    - cyclist in vehicle lane
+
+  low:
+    - road debris or obstacle
+    - large crowd gathering near roadway
+    - bystander cluster at incident
+    - animal on roadway
+    - construction zone activity
+    - weather hazard
+    - unusual vehicle
+
+remap:
+  # collision aliases
+  active vehicle collision: vehicle-to-vehicle collision
+  vehicle crash: vehicle-to-vehicle collision
+  rear-end collision: vehicle-to-vehicle collision
+  t-bone collision: vehicle-to-vehicle collision
+  sideswipe collision: vehicle-to-vehicle collision
+  head-on collision: vehicle-to-vehicle collision
+  vehicle-to-motorcycle collision: motorcycle or scooter crash
+  vehicle-to-scooter collision: motorcycle or scooter crash
+  vehicle-to-bicycle collision: vehicle-to-cyclist collision
+  chain-reaction collision: multi-vehicle pileup
+  self-inflicted crash: solo vehicle crash
+  single vehicle crash: solo vehicle crash
+  solo motorcycle fall: motorcycle or scooter crash
+  # aftermath / response aliases
+  accident aftermath scene: collision aftermath
+  post-collision scene: collision aftermath
+  emergency response active: emergency vehicle response
+  police activity: traffic officer directing traffic
+  # stalled vehicle aliases
+  vehicle obstruction: stalled vehicle in travel lane
+  vehicle mechanical failure: stalled vehicle in travel lane
+  disabled vehicle: stalled vehicle in travel lane
+  vehicle breakdown on shoulder: stalled vehicle on shoulder
+  # violation / hazard aliases
+  dangerous driving maneuver: reckless lane change or weaving
+  traffic signal violation: red light violation
+  abnormal pedestrian presence: pedestrian in vehicle lane
+  pedestrian crossing: pedestrian jaywalking
+  # fire alias
+  vehicle fire or smoke: vehicle fire or explosion
+  # injury aliases
+  pedestrian injury: pedestrian fall or injury
+  person lying on road: person on ground in roadway
+  rider on ground: person on ground in roadway
+
+excluded:
+  - video artifact or glitch
+  - video artifact
+  - camera malfunction
+  - unknown
+  - other
