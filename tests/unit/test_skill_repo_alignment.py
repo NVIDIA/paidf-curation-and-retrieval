@@ -8,7 +8,7 @@ from __future__ import annotations
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-SKILL_ROOT = REPO_ROOT / "skills" / "curation-and-retrieval"
+SKILL_ROOT = REPO_ROOT / "skills" / "paidf-curation-and-retrieval"
 SKILL_MD = SKILL_ROOT / "SKILL.md"
 SPLIT_MINIMAL = REPO_ROOT / "cookbook" / "traffic-video-analytics" / "split-minimal.yaml"
 
@@ -30,7 +30,11 @@ def _skill_markdown_files() -> list[Path]:
     return sorted(SKILL_ROOT.rglob("*.md"))
 
 
-def test_skill_pack_does_not_cite_retired_e2e_harness() -> None:
+def test_skill_yaml_name_matches_the_product_name() -> None:
+    """Harbor expected_skill and SKILL.md name must match the public product."""
+    text = SKILL_MD.read_text(encoding="utf-8")
+    assert text.startswith("---\nname: paidf-curation-and-retrieval\n")
+    assert SKILL_ROOT.name == "paidf-curation-and-retrieval"
     """The gitignored E2E/L1 harness is gone; skills must not send operators there."""
     offenders: list[str] = []
     for path in _skill_markdown_files():

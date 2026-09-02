@@ -292,7 +292,7 @@ paidf-curation-and-retrieval/
 
 | Skill | Scope |
 |-------|--------|
-| `curation-and-retrieval` | Cosmos Curator configs, cookbooks, Data Mining handoffs |
+| `paidf-curation-and-retrieval` | Cosmos Curator configs, cookbooks, Data Mining handoffs |
 
 Customer guide: [docs/user-guide/](docs/user-guide/).
 

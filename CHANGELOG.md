@@ -52,7 +52,7 @@ Product surface at HEAD compared to git tag `v1.0.0`.
   Limitations), including VLM/LLM endpoint launch and wiring.
 - README Quick Start covers Path A (Curator), Path B (Mining), and Path C
   (Curator embeddings into mining) with short copy-paste examples.
-- PAIDF skill pack: `skills/curation-and-retrieval/` (Curator, mining, SAM3,
+- PAIDF skill pack: `skills/paidf-curation-and-retrieval/` (Curator, mining, SAM3,
   FFmpeg, handoffs).
 - Mining CLI/workflow **evidence** (generated experiment spec; UNM output
   validation paths).
@@ -77,7 +77,7 @@ Product surface at HEAD compared to git tag `v1.0.0`.
 - Custom embedding/filepath column names honored during TMM parquet preparation
   (no longer hardcoded to `embedding` / `filepath` only).
 - Skills relocated from `.claude/skills/data-curation-skill/` to
-  `skills/curation-and-retrieval/` and expanded for image **and** text
+  `skills/paidf-curation-and-retrieval/` and expanded for image **and** text
   embeddings, UNM, and S/B terminology.
 - Traffic Path A / cookbook embeddings default to **Cosmos-Embed1** where Path C
   handoff is intended; warehouse full split documents SAM3 **box** overlays

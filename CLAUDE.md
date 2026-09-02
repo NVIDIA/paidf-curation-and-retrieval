@@ -126,7 +126,7 @@ disclosure via `references/` subdirectories.
 
 | Skill | Purpose |
 |-------|---------|
-| `curation-and-retrieval` | Cosmos Curator split / dedup / shard / image annotate: configure, run, troubleshoot, KPI and distribution-aware curation |
+| `paidf-curation-and-retrieval` | Cosmos Curator split / dedup / shard / image annotate: configure, run, troubleshoot, KPI and distribution-aware curation |
 
 Scope notes:
 - Data Mining ops are covered by `make help` / cookbooks, not by

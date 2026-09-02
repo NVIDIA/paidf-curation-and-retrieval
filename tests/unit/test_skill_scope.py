@@ -8,8 +8,10 @@ from __future__ import annotations
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-SKILL = REPO_ROOT / "skills" / "curation-and-retrieval" / "SKILL.md"
-DATA_MINING = REPO_ROOT / "skills" / "curation-and-retrieval" / "references" / "data-mining.md"
+SKILL = REPO_ROOT / "skills" / "paidf-curation-and-retrieval" / "SKILL.md"
+DATA_MINING = (
+    REPO_ROOT / "skills" / "paidf-curation-and-retrieval" / "references" / "data-mining.md"
+)
 TAO_CLI_COMMANDS = (
     "tmm nearest_neighbors",
     "tmm unique_neighbor_matching",
@@ -30,7 +32,11 @@ def test_skill_index_does_not_name_tao_cli_commands() -> None:
 def test_context_understanding_example_orders_critical_first() -> None:
     """Taxonomy example lists critical events before the baseline catch-all."""
     text = (
-        REPO_ROOT / "skills" / "curation-and-retrieval" / "references" / "context-understanding.md"
+        REPO_ROOT
+        / "skills"
+        / "paidf-curation-and-retrieval"
+        / "references"
+        / "context-understanding.md"
     ).read_text(encoding="utf-8")
     start = text.index("Example -- traffic video analytics:")
     yaml_start = text.index("```yaml", start)

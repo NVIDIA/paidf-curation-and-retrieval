@@ -1,4 +1,4 @@
-# Skill Benchmark: curation-and-retrieval
+# Skill Benchmark: paidf-curation-and-retrieval
 
 > ✅ **Overall verdict: PASS — Recommended for publication**
 
@@ -8,12 +8,12 @@ Recommended for publication based on the completed evaluation evidence in this r
 
 ## Evaluation Metadata
 
-- Skill: `curation-and-retrieval`
+- Skill: `paidf-curation-and-retrieval`
 - Evaluation date: 2026-09-02
 - Evaluator version: `1.3.2`
 - Agents: Claude Code (`aws/anthropic/bedrock-claude-opus-4-8`), Codex (`openai/openai/gpt-5.5`)
 - Tasks: 13 evaluation tasks (13 positive)
-- Dataset digest: `sha256:fc95933dabd86e950fdc5e2da31d00b42cf17ac9c0e3f9b6c9edbfd6a8392f76` (skill-evaluator-dataset-snapshot/1)
+- Dataset digest: `sha256:042681c515dffad615f864930465ed62da31beed62934ac2d384f86755134fcd` (skill-evaluator-dataset-snapshot/1)
 - Attempts per task: 1
 - Environment: `k8s-sandbox`
 - Tier 3 evidence: required for publication
@@ -45,12 +45,12 @@ The three-tier evaluation checks whether the skill:
 
 | Measure | Claude Code (Baseline → Skill Uplift) | Codex (Baseline → Skill Uplift) |
 |---|---:|---:|
-| Overall | 51% → 90% (+39 points) | 48% → 84% (+36 points) |
-| Security | 92% → 100% (+8 points) | 81% → 100% (+19 points) |
-| Correctness | 46% → 100% (+54 points) | 57% → 95% (+38 points) |
-| Discoverability | 38% → 84% (+45 points) | 30% → 65% (+35 points) |
-| Effectiveness | 49% → 88% (+39 points) | 41% → 84% (+43 points) |
-| Efficiency | 29% → 78% (+49 points) | 29% → 76% (+47 points) |
+| Overall | 54% → 91% (+37 points) | 48% → 88% (+40 points) |
+| Security | 96% → 100% (+4 points) | 85% → 96% (+12 points) |
+| Correctness | 49% → 100% (+51 points) | 52% → 95% (+43 points) |
+| Discoverability | 45% → 88% (+43 points) | 33% → 77% (+44 points) |
+| Effectiveness | 49% → 88% (+39 points) | 44% → 86% (+42 points) |
+| Efficiency | 32% → 78% (+46 points) | 27% → 86% (+58 points) |
 
 **How to read this table:** baseline is the same task attempted without the target skill. Uplift is `skill score - baseline score`, shown in percentage points.
 
