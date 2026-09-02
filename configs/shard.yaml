@@ -1,0 +1,87 @@
+# =============================================================================
+# Cosmos-Curator Shard Pipeline -- Full Reference Config
+# =============================================================================
+# Flat YAML consumed directly by upstream cosmos-curator load_pipeline_config.
+# Keys are argparse dest names (snake_case). Omitted keys get parser defaults.
+#
+# Run:
+#   make run-pipeline CONFIG_FILE=configs/shard.yaml
+#
+# Or inside the container:
+#   pixi run -e default --as-is python -m cosmos_curator.pipelines.video.run_pipeline /config/shard.yaml
+# =============================================================================
+
+pipeline: "shard"
+
+# =============================================================================
+# Common Settings (shared by split, dedup, shard)
+# =============================================================================
+
+# -- S3 profiles --
+input_s3_profile_name: "default"             # --input-s3-profile-name
+output_s3_profile_name: "default"            # --output-s3-profile-name
+
+# -- Execution --
+execution_mode: "BATCH"                      # --execution-mode [BATCH, STREAMING]
+limit: 0                                     # --limit  (0 = process all)
+verbose: false                               # --verbose
+# In-container mount point (Makefile maps host MODELS_DIR -> /config/models).
+# Keep as a literal path; the config loader does not expand env vars / ${VAR}.
+model_weights_path: "/config/models"         # --model-weights-path
+
+# -- Profiling --
+perf_profile: true                           # --perf-profile / --no-perf-profile
+profile_tracing: false                       # --profile-tracing
+profile_cpu: false                           # --profile-cpu
+profile_memory: false                        # --profile-memory
+profile_gpu: false                           # --profile-gpu
+profile_cpu_exclude: "_root"                 # --profile-cpu-exclude
+profile_memory_exclude: "_root"              # --profile-memory-exclude
+profile_gpu_exclude: "_root"                 # --profile-gpu-exclude
+
+# =============================================================================
+# Shard-Specific Settings
+# =============================================================================
+
+# S3 URI or local host path to split pipeline output containing processed clips.
+# For local paths, also pass DATA_DIR=<dir> to make so it is bind-mounted in.
+input_clip_path: "<YOUR_SPLIT_OUTPUT_PATH>"  # --input-clip-path  (REQUIRED)
+
+# S3 URI or local host path to store output WebDataset tar archives
+output_dataset_path: "<YOUR_SHARD_OUTPUT_PATH>"  # --output-dataset-path  (REQUIRED)
+
+# Captioning algorithm used in the split pipeline annotation stage.
+# Must match the algorithm that generated the captions in input_clip_path.
+captioning_algorithm: "qwen3_vl_30b_fp8"    # --captioning-algorithm [cosmos_r1, cosmos_r2, gemini, nemotron, openai, qwen, qwen3_5_27b, qwen3_6_27b, qwen3_6_27b_fp8, qwen3_vl_30b, qwen3_vl_30b_fp8, qwen3_vl_235b, qwen3_vl_235b_fp8, vllm_async]
+
+# Annotation version to read from clip metadata
+annotation_version: "v0"                    # --annotation-version
+
+# -- Semantic Dedup Integration --
+
+# S3 or local path to the dedup output root containing extraction/ parquet files
+# with deduplicated clip IDs. Pass the directory containing extraction/, not the
+# extraction/ path itself.
+# If null, no dedup filtering is applied during sharding.
+input_semantic_dedup_path: null              # --input-semantic-dedup-path
+
+# S3 profile for reading dedup output (if on S3)
+input_semantic_dedup_s3_profile_name: "default"  # --input-semantic-dedup-s3-profile-name
+
+# Epsilon threshold for semantic dedup.
+# Clips with cosine similarity >= (1 - epsilon) are considered duplicates.
+semantic_dedup_epsilon: 0.01                 # --semantic-dedup-epsilon
+
+# -- Tar Archive Sizing --
+
+# Maximum number of tar archives per part directory
+max_tars_per_part: 100                       # --max-tars-per-part
+
+# Target size in MB for each tar archive
+target_tar_size_mb: 500                      # --target-tar-size-mb
+
+# Minimum number of clips required per tar archive
+min_clips_per_tar: 1                         # --min-clips-per-tar
+
+# Drop tar archives that have fewer than min_clips_per_tar clips
+drop_small_shards: false                     # --drop-small-shards / --no-drop-small-shards

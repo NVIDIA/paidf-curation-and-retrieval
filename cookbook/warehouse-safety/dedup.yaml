@@ -1,0 +1,17 @@
+# =============================================================================
+# Warehouse Safety -- Dedup Config (overrides only)
+# =============================================================================
+# Standard clustering for warehouse safety footage.
+# See configs/dedup.yaml for the full reference.
+# =============================================================================
+
+pipeline: "dedup"
+
+# -- I/O (under DATA_DIR, mounted at /data; input = split output) --
+input_embeddings_path: /data/output/split
+output_path: /data/output/dedup
+model_weights_path: "/config/models"
+
+# -- Clustering --
+n_clusters: 4
+eps_to_extract: 0.01

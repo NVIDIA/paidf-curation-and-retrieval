@@ -1,0 +1,154 @@
+# =============================================================================
+# Cosmos-Curator Split Pipeline -- Calibration Template
+# =============================================================================
+# Safe-defaults config for the FIRST run when no KPI sample analysis exists.
+#
+# Intent: process a small sample (5-10 videos) with all filters in
+# score-only / disable mode so the agent can inspect the output, learn
+# the dataset's score distributions, and tune real thresholds before
+# committing to a full-dataset run.
+#
+# Usage:
+#   1. Complete the calibration interview in
+#      skills/curation-and-retrieval/references/calibration-config.md
+#      Phase 1 (mandatory).
+#   2. Copy this file to a working location and fill in the
+#      USER-MUST-FILL fields below.
+#   3. Run the calibration pass:
+#        make run-pipeline CONFIG_FILE=<path/to/your_calibration.yaml>
+#   4. Inspect output (metas/v0/*.json, summary.json), then promote
+#      to a full run (Phase 4 of calibration-config.md).
+# =============================================================================
+
+pipeline: "split"
+
+# -- Common --
+input_s3_profile_name: "default"
+output_s3_profile_name: "default"
+execution_mode: "BATCH"
+
+# Calibration: process only 5-10 videos. Remove this cap (set to 0)
+# only after Phase 3 review. See calibration-config.md Phase 3.
+limit: 5
+
+verbose: false
+# In-container mount point (Makefile maps host MODELS_DIR -> /config/models).
+# Keep as a literal path; the config loader does not expand env vars / ${VAR}.
+model_weights_path: "/config/models"
+
+# Surface per-stage timing for the post-calibration review.
+perf_profile: true
+profile_tracing: false
+profile_cpu: false
+profile_memory: false
+profile_gpu: false
+
+# -- Input / Output (USER MUST FILL) --
+# Replace with your S3 URI or local host path. For local paths, also pass
+# DATA_DIR=<dir> to make so the host dir is bind-mounted into the container.
+input_video_path: "<YOUR_INPUT_PATH>"
+output_clip_path: "<YOUR_CALIBRATION_OUTPUT_PATH>"
+input_video_list_json_path: null
+input_presigned_s3_url: null
+output_presigned_s3_url: null
+
+# -- Feature Toggles (calibration-safe defaults) --
+# Defer embeddings until dedup is needed.
+generate_embeddings: false
+generate_captions: true
+generate_previews: false
+upload_clips: true
+upload_clip_info_in_lance: false
+upload_clip_info_in_chunks: false
+upload_cds_parquet: false
+generate_cosmos_predict_dataset: "disable"
+write_all_caption_json: true
+
+# -- Splitting (fixed-stride for complete coverage during calibration) --
+# 30s clips give every video dense, predictable coverage. Switch to
+# transnetv2 in the promotion config only if calibration confirms the
+# footage has meaningful scene boundaries.
+splitting_algorithm: "fixed-stride"
+fixed_stride_split_duration: 30
+fixed_stride_min_clip_length_s: 5
+
+# -- Transcode (CPU encoder by default) --
+transcode_cpus_per_worker: 5.0
+transcode_encoder: "libopenh264"
+transcode_encoder_threads: 1
+transcode_ffmpeg_batch_size: 16
+transcode_use_hwaccel: false
+
+# -- Super-Resolution (off by default; expensive) --
+super_resolution: false
+
+# -- Motion Filter (SCORE ONLY -- tune threshold from calibration output) --
+# Inspect motion_score.global_mean distribution and set
+# motion_global_mean_threshold near the 10th percentile in the
+# promotion config.
+motion_filter: "score-only"
+motion_global_mean_threshold: null
+motion_per_patch_min_256_threshold: 0.000001
+motion_decode_target_fps: 2.0
+
+# -- Aesthetic Filter (DISABLED -- enable in promotion after inspecting scores) --
+aesthetic_threshold: null
+aesthetic_reduction: "min"
+
+# -- Artificial Text Filter (DISABLED -- enable only if user confirms overlays) --
+artificial_text_filter: "disable"
+
+# -- VLM Filter (DISABLED for calibration) --
+vlm_filter: "disable"
+
+# -- Video Classifier (DISABLED -- enable after taxonomy is confirmed) --
+video_classifier: false
+video_classifier_use_custom_categories: false
+video_classifier_allow: null
+video_classifier_block: null
+
+# -- Embedding (matches generate_embeddings: false above) --
+embedding_algorithm: "internvideo2"
+embedding_gpus_per_worker: 0.25
+embedding_batch_size: 8
+
+# -- Captioning (Qwen3-VL-30B FP8 -- 1 GPU, ~20GB VRAM) --
+# Recommended calibration default: best quality-per-GPU among
+# single-GPU options. Switch to "vllm_async" only when calibration
+# confirms multi-GPU is needed.
+captioning_algorithm: "qwen3_vl_30b_fp8"
+captioning_window_size: 256
+captioning_remainder_threshold: 128
+
+# USER MUST CONFIRM (driven by calibration interview B1):
+#   "default" general or fixed-camera video, "av" autonomous-vehicle dashcam,
+#   or set captioning_prompt_text for a custom domain.
+captioning_prompt_variant: "default"
+captioning_prompt_text: null
+
+captioning_sampling_fps: 2.0
+captioning_max_output_tokens: 8192
+
+# -- Caption Enhancement (DISABLED for calibration -- saves LLM tokens) --
+enhance_captions: false
+
+# -- Multi-Camera (off; flip true only if user confirmed multi-cam input) --
+multi_cam: false
+
+# -- SAM3 / Per-Event Captioning (off; specialist features) --
+# NB: the splitting pipeline reads `args.sam3` / `args.event_captioning`
+# (argparse `--sam3`, `--event-captioning`). The misspelled
+# `enable_sam3:` / `enable_event_captioning:` silently fall through and
+# SAM3 never runs.
+sam3: false
+event_captioning: false
+
+# -- Stage Replay / Compare (off; debug-only) --
+stage_save: null
+stage_replay: null
+
+# After calibration:
+#   - Read calibration-config.md Phase 3 to derive tuned thresholds.
+#   - Promote to a full-run config (Phase 4): set limit: 0, enable
+#     tuned filters, optionally enable enhance_captions, optionally
+#     enable generate_embeddings if dedup will run.

@@ -1,0 +1,38 @@
+scenario: "warehouse and distribution center safety monitoring"
+
+events_list:
+  - forklift_collision_with_pedestrian
+  - forklift_collision_with_rack
+  - forklift_collision_with_vehicle
+  - forklift_tip_over
+  - worker_fall_from_height
+  - rack_collapse_with_falling_inventory
+  - worker_struck_by_moving_vehicle
+  - blocked_emergency_exit
+  - unauthorized_restricted_area_entry
+  - worker_without_required_ppe
+  - pedestrian_in_forklift_travel_zone
+  - forklift_traveling_with_raised_load
+  - spill_or_obstruction_in_aisle
+  - normal_warehouse_operations
+
+objects_of_interest:
+  - worker
+  - forklift
+  - pallet jack
+  - rolling ladder
+  - pallet
+  - rack
+  - hard hat
+  - safety vest
+  - traffic cone
+  - caution tape
+  - box
+  - emergency exit sign
+  - reach truck
+  - conveyor belt
+  - loading dock
+  - trailer
+  - fire extinguisher
+  - guard rail
+  - safety barrier

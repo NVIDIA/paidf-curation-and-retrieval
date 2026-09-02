@@ -1,0 +1,145 @@
+domain: warehouse operations
+baseline_event: normal warehouse operations
+
+keywords:
+  - warehouse
+  - forklift
+  - pallet
+  - pallet jack
+  - rack
+  - shelving
+  - conveyor
+  - loading dock
+  - dock
+  - aisle
+  - storage
+  - inventory
+  - crate
+  - box
+  - shipping
+  - receiving
+  - mezzanine
+  - staging area
+  - pick module
+  - sortation
+  - reach truck
+  - order picker
+  - turret truck
+  - automated guided vehicle
+  - agv
+  - amr
+
+events:
+  critical:
+    # powered industrial truck (PIT) incidents -- OSHA 1910.178
+    - forklift collision with pedestrian
+    - forklift collision with rack or structure
+    - forklift collision with another vehicle
+    - forklift tip-over
+    - reach truck or turret truck tip-over
+    # falls -- OSHA top-4 warehouse fatality cause
+    - worker fall from height
+    - worker fall from loading dock edge
+    - worker fall from mezzanine
+    # struck-by -- OSHA top-4 warehouse fatality cause
+    - rack collapse with falling inventory
+    - falling object from overhead storage
+    - worker struck by moving vehicle
+    - worker crushed between dock and trailer
+    # fire / hazmat
+    - fire or explosion in facility
+    - chemical or hazardous material spill
+
+  serious:
+    # PIT near-incidents
+    - forklift carrying raised load while traveling
+    - forklift operating with obstructed view
+    - forklift traveling with forks elevated
+    # dock operations -- high-injury zone
+    - trailer creep or separation during loading
+    - dock plate or leveler failure
+    - vehicle rollback at dock
+    # conveyor / automation
+    - conveyor belt entanglement or jam
+    - automated guided vehicle collision
+    # cargo handling
+    - pallet drop or load shift
+    - unsecured load falling from truck
+    # response
+    - emergency response on site
+
+  moderate:
+    # PIT violations -- OSHA 1910.178(l)
+    - forklift speeding in facility
+    - pedestrian in forklift travel zone
+    - worker riding on forklift forks or load
+    - forklift operating in pedestrian aisle
+    - forklift left running unattended
+    # storage violations -- OSHA 1910.176
+    - improper pallet stacking or overloaded rack
+    - materials stored blocking sprinkler clearance
+    - blocked emergency exit or fire lane
+    # PPE / ergonomic
+    - worker without required ppe
+    - unsafe manual lifting technique
+    # dock
+    - trailer not chocked or wheel-restrained at dock
+    - dock door opened with no trailer present
+
+  low:
+    - near miss incident
+    - congestion in aisle or staging area
+    - spill or wet surface on floor
+    - damaged packaging or product
+    - equipment left unattended
+    - missing or damaged floor markings
+    - unusual vehicle in warehouse
+    - debris in walkway or travel lane
+
+remap:
+  # forklift aliases
+  forklift accident: forklift collision with rack or structure
+  forklift crash: forklift collision with rack or structure
+  forklift hits person: forklift collision with pedestrian
+  forklift hits worker: forklift collision with pedestrian
+  forklift rollover: forklift tip-over
+  forklift overturn: forklift tip-over
+  # fall aliases
+  fall from dock: worker fall from loading dock edge
+  fall from height: worker fall from height
+  fall from mezzanine: worker fall from mezzanine
+  worker fall: worker fall from height
+  # struck-by aliases
+  rack collapse: rack collapse with falling inventory
+  shelving collapse: rack collapse with falling inventory
+  falling object: falling object from overhead storage
+  worker hit by vehicle: worker struck by moving vehicle
+  worker injury: worker struck by moving vehicle
+  # dock aliases
+  loading accident: trailer creep or separation during loading
+  dock accident: trailer creep or separation during loading
+  trailer drift: trailer creep or separation during loading
+  # cargo aliases
+  product spill: pallet drop or load shift
+  pallet collapse: pallet drop or load shift
+  load shift: pallet drop or load shift
+  # hazmat aliases
+  chemical spill: chemical or hazardous material spill
+  hazmat spill: chemical or hazardous material spill
+  # violation aliases
+  safety violation: worker without required ppe
+  ppe violation: worker without required ppe
+  pedestrian hazard: pedestrian in forklift travel zone
+  blocked exit: blocked emergency exit or fire lane
+  equipment malfunction: conveyor belt entanglement or jam
+  # agv aliases
+  agv collision: automated guided vehicle collision
+  amr collision: automated guided vehicle collision
+  robot collision: automated guided vehicle collision
+
+excluded:
+  - video artifact or glitch
+  - camera malfunction
+  - unknown
+  - other
+  - routine maintenance

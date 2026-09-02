@@ -1,0 +1,12 @@
+# TAO Toolkit DS — tmm unique_neighbor_matching experiment
+# Paths are inside the container mount at /data (host DATA_DIR).
+#
+# Run:
+#   make run-data-mining-unique-match \
+#     DATA_DIR=$PWD/data/unique-neighbor-matching \
+#     TMM_UNM_CONFIG_FILE=cookbook/unique-neighbor-matching/unm.yaml
+
+source_path: /data/B.parquet
+target_path: /data/S.parquet
+output_dir: /data/unm_out
+desired_unique_count: 100

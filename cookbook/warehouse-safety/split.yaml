@@ -1,0 +1,142 @@
+# =============================================================================
+# Warehouse Safety -- Split Config (overrides only)
+# =============================================================================
+# Fixed-stride splitting with domain-specific captioning, VLM safety
+# classification, and SAM3 track-grounded spatial event captioning for
+# warehouse / distribution center camera footage.
+#
+# Key features:
+#   - Fixed-stride 30s clips for consistent temporal coverage of aisles/docks
+#   - Qwen3-VL-30B FP8 captioning with default prompt
+#   - Qwen Video Classifier with 14 warehouse safety event categories
+#   - SAM3 tracking + event captioning (box-style overlay, #id labels)
+#   - Motion scoring (score-only mode) for metadata enrichment
+#   - InternVideo2 embeddings for downstream semantic dedup
+#
+# Event caption prompt: cookbook file mounted at /data/event_caption_prompt.txt
+# when DATA_DIR is this directory (or a work dir that copies the prompt).
+#
+# All omitted keys fall back to parser defaults.
+# See configs/split.yaml for the full reference.
+# =============================================================================
+
+pipeline: "split"
+
+# -- I/O (under DATA_DIR, mounted at /data) --
+input_video_path: /data/videos
+output_clip_path: /data/output/split
+model_weights_path: "/config/models"
+
+# -- Splitting: fixed-stride 30s clips (warehouse cameras are fixed, continuous) --
+splitting_algorithm: "fixed-stride"
+fixed_stride_split_duration: 30
+fixed_stride_min_clip_length_s: 2.0
+
+# -- Captioning: Qwen3-VL-30B FP8 --
+# For a custom domain prompt, copy the prompt text from prompt.md and inline it
+# here as captioning_prompt_text, or select a built-in prompt variant.
+captioning_algorithm: "qwen3_vl_30b_fp8"
+captioning_prompt_variant: "default"
+captioning_window_size: 60
+captioning_sampling_fps: 2.0
+captioning_max_output_tokens: 4096
+
+# -- vLLM sampling (production-validated) --
+vllm_sampling_temperature: 0.1
+vllm_sampling_top_p: 0.001
+vllm_sampling_repetition_penalty: 1.05
+
+# -- Enhance captions --
+enhance_captions: true
+enhance_captions_prompt_variant: "default"
+
+# -- Motion filter: score-only mode (enriches metadata without dropping clips) --
+motion_filter: "score-only"
+
+# -- Safety event detection: Video Classifier with warehouse categories --
+# Classifies each clip into domain-specific safety event types using VLM.
+# Clips matching categories in the allow-list are retained; others are dropped.
+video_classifier: true
+video_classifier_use_custom_categories: true
+video_classifier_allow:
+  - "forklift_collision_with_pedestrian"
+  - "forklift_collision_with_rack"
+  - "forklift_collision_with_vehicle"
+  - "forklift_tip_over"
+  - "worker_fall_from_height"
+  - "rack_collapse_with_falling_inventory"
+  - "worker_struck_by_moving_vehicle"
+  - "blocked_emergency_exit"
+  - "unauthorized_restricted_area_entry"
+  - "worker_without_required_ppe"
+  - "pedestrian_in_forklift_travel_zone"
+  - "forklift_traveling_with_raised_load"
+  - "spill_or_obstruction_in_aisle"
+  - "normal_warehouse_operations"
+
+# -- SAM3 + track-grounded spatial event captioning --
+# Requires sam3 Pixi env / weights. Outputs sam3_instances/, sam3_objects/,
+# sam3_tracked/, and sam3_events/*.json (decision_basis + track evidence).
+# Prompts match classification_events.yaml objects_of_interest (same order).
+# Skip generic "a cardboard box" -- it is not in that list; shelves are packed
+# and SAM3 would spawn hundreds of tracks.
+sam3: true
+sam3_prompts:
+  - "a worker"
+  - "a forklift"
+  - "a pallet jack"
+  - "a rolling ladder"
+  - "a pallet"
+  - "a rack"
+  - "a hard hat"
+  - "a safety vest"
+  - "a traffic cone"
+  - "caution tape"
+  - "a box"
+  - "an emergency exit sign"
+  - "a reach truck"
+  - "a conveyor belt"
+  - "a loading dock"
+  - "a trailer"
+  - "a fire extinguisher"
+  - "a guard rail"
+  - "a safety barrier"
+sam3_target_fps: 3.0
+sam3_max_clip_duration_s: 45.0
+sam3_session_reset_s: 5.0
+sam3_score_threshold_detection: 0.6
+sam3_det_nms_thresh: 0.1
+sam3_new_det_thresh: 0.8
+sam3_fill_hole_area: 256
+sam3_recondition_every_nth_frame: 8
+sam3_recondition_on_trk_masks: true
+sam3_high_conf_thresh: 0.5
+sam3_high_iou_thresh: 0.4
+sam3_region: box
+sam3_output_format: native
+sam3_write_annotated_video: true
+sam3_annotated_video_trails: false
+sam3_annotated_video_label_style: "id"
+sam3_annotated_video_mask_opacity: 0
+
+event_captioning: true
+event_caption_backend: "qwen"
+event_caption_qwen_variant: "qwen3_vl_30b_fp8"
+event_caption_qwen_fp8: false
+event_caption_qwen_sampling_fps: 2.0
+event_caption_qwen_temperature: 0.1
+event_caption_qwen_top_p: 0.9
+event_caption_prompt_file: /data/event_caption_prompt.txt
+event_caption_prompt: null
+
+# -- Embedding --
+embedding_algorithm: "internvideo2"
+
+# -- Features --
+generate_captions: true
+generate_embeddings: true
+upload_clips: true
+write_all_caption_json: true
+
+# -- Performance (perf profiling useful for long runs) --
+perf_profile: true

@@ -1,0 +1,115 @@
+domain: retail store video analytics
+baseline_event: normal store activity
+
+keywords:
+  - store
+  - shop
+  - retail
+  - checkout
+  - register
+  - cash register
+  - point of sale
+  - shopping cart
+  - shelf
+  - aisle
+  - customer
+  - shopper
+  - cashier
+  - merchandise
+  - display
+  - fitting room
+  - entrance
+  - exit
+  - mall
+  - supermarket
+  - grocery
+  - pharmacy
+  - electronics store
+
+events:
+  critical:
+    # person safety
+    - physical altercation involving employee or customer
+    - active attacker in store
+    - customer or employee collapse
+    - fire or smoke in store
+    - structural failure or ceiling collapse
+    - stampede or crowd crush
+    - forced entry through entrance or window
+
+  serious:
+    # merchandise handling anomalies (observable)
+    - coordinated group removing merchandise
+    - shelf sweep of merchandise
+    - shopping cart walkout with unpaid merchandise
+    - concealment of merchandise
+    - tag or packaging removal
+    - receipt or return mismatch at register
+    - employee removing merchandise from register area
+    - employee removing merchandise from stockroom
+    # property / response
+    - vandalism or deliberate product damage
+    - emergency response on site
+    - facility staff intervention
+
+  moderate:
+    # aisle / access hazards
+    - person lingering near high-value merchandise
+    - customer entering restricted or employee-only area
+    - foil-lined bag near merchandise
+    - price tag switching
+    - self-checkout skip scan
+    # safety hazards
+    - spill or wet floor without signage
+    - blocked emergency exit or fire lane
+    - customer slip trip or fall
+    - employee slip trip or fall
+    - shopping cart collision with person
+    # disturbance
+    - verbal altercation between customers
+    - customer confrontation with employee
+
+  low:
+    - unattended bag or package
+    - child left unattended
+    - person photographing store layout
+    - after hours unauthorized presence
+    - damaged or leaking product on shelf
+    - congestion at checkout or entrance
+    - shopping cart left in driving lane
+    - unusual crowd gathering
+
+remap:
+  grabbing merchandise: concealment of merchandise
+  unpaid walkout: shopping cart walkout with unpaid merchandise
+  group taking merchandise: coordinated group removing merchandise
+  fighting: physical altercation involving employee or customer
+  assault: physical altercation involving employee or customer
+  attack: active attacker in store
+  break-in: forced entry through entrance or window
+  burglary: forced entry through entrance or window
+  graffiti: vandalism or deliberate product damage
+  property damage: vandalism or deliberate product damage
+  customer fall: customer slip trip or fall
+  employee fall: employee slip trip or fall
+  slip and fall: customer slip trip or fall
+  medical emergency: customer or employee collapse
+  person on ground: customer or employee collapse
+  return mismatch: receipt or return mismatch at register
+  refund mismatch: receipt or return mismatch at register
+  skip scan: self-checkout skip scan
+  internal removal: employee removing merchandise from register area
+  employee removing stock: employee removing merchandise from stockroom
+  unusual person: person lingering near high-value merchandise
+  unusual activity: person lingering near high-value merchandise
+  blocked exit: blocked emergency exit or fire lane
+  abandoned bag: unattended bag or package
+  shelf clearing: shelf sweep of merchandise
+
+excluded:
+  - video artifact or glitch
+  - camera malfunction
+  - unknown
+  - other
+  - routine restocking
+  - normal cleaning

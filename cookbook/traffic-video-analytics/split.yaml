@@ -1,0 +1,133 @@
+# =============================================================================
+# Smart City Traffic -- Split Config (overrides only)
+# =============================================================================
+# Fixed-stride splitting with domain-specific captioning, VLM clip classifier,
+# and SAM3 track-grounded spatial event captioning for urban traffic footage
+# (VSS sample clips in videos/, or operator CCTV).
+#
+# Key features:
+#   - Fixed-stride 10s clips for dense coverage of short traffic samples
+#   - Qwen3-VL-30B FP8 captioning with Default prompt
+#   - Qwen Video Classifier with 12 smart-city event categories
+#   - SAM3 tracking + event captioning (track-grounded spatial JSON)
+#   - Motion scoring (score-only mode) for metadata enrichment
+#   - Cosmos-Embed1 224p embeddings for downstream semantic dedup
+#
+# Event caption prompt: cookbook file mounted at /data/event_caption_prompt.txt
+# when DATA_DIR is this directory (or a work dir that copies the prompt).
+#
+# All omitted keys fall back to parser defaults.
+# See configs/split.yaml for the full reference.
+# =============================================================================
+
+pipeline: "split"
+
+# -- I/O (under DATA_DIR, mounted at /data) --
+input_video_path: /data/videos
+output_clip_path: /data/output/split
+model_weights_path: "/config/models"
+
+# -- Splitting: fixed-stride 10s clips (matches the shipped ~89 s / ~130 s samples) --
+splitting_algorithm: "fixed-stride"
+fixed_stride_split_duration: 10
+fixed_stride_min_clip_length_s: 2.0
+
+# -- Captioning: domain-specific prompt with Qwen3-VL-30B FP8 --
+# For a custom domain prompt, inline the text here using a YAML block scalar
+# or set captioning_prompt_variant to a built-in variant.
+captioning_algorithm: "qwen3_vl_30b_fp8"
+captioning_prompt_variant: "default"
+captioning_window_size: 60
+captioning_sampling_fps: 2.0
+captioning_max_output_tokens: 4096
+
+# -- vLLM sampling (production-validated) --
+vllm_sampling_temperature: 0.1
+vllm_sampling_top_p: 0.001
+vllm_sampling_repetition_penalty: 1.05
+
+# -- Enhance captions --
+enhance_captions: true
+enhance_captions_prompt_variant: "default"
+
+# -- Motion filter: score-only mode (enriches metadata without dropping clips) --
+motion_filter: "score-only"
+
+# -- Event detection: Video Classifier with smart-city categories --
+# Classifies each clip into domain-specific event types using VLM reasoning.
+# Clips matching categories in the allow-list are retained; others are dropped.
+video_classifier: true
+video_classifier_use_custom_categories: true
+video_classifier_allow:
+  - "nominal_traffic_flow"
+  - "vehicle_to_vehicle_collision"
+  - "motorcycle_or_scooter_crash"
+  - "vehicle_to_pedestrian_collision"
+  - "jaywalking"
+  - "person_on_ground_in_roadway"
+  - "vehicle_fire_or_heavy_smoke"
+  - "collision_aftermath"
+  - "emergency_vehicle_response"
+  - "unsafe_turn_or_right_of_way_conflict"
+  - "signal_violation_or_wrong_way"
+  - "stalled_vehicle_or_roadway_obstruction"
+
+# -- SAM3 + track-grounded spatial event captioning --
+# Requires sam3 Pixi env / weights. Outputs sam3_instances/, sam3_objects/,
+# sam3_tracked/, and sam3_events/*.json (decision_basis + track evidence).
+sam3: true
+sam3_prompts:
+  - "a car"
+  - "a pedestrian"
+  - "a truck"
+  - "a bus"
+  - "a motorcycle"
+  - "a scooter"
+  - "a bicycle"
+  - "a traffic light"
+  - "a police car"
+  - "an ambulance"
+  - "a fire truck"
+  - "a taxi"
+  - "a crosswalk"
+  - "a stop sign"
+sam3_target_fps: 3.0
+sam3_max_clip_duration_s: 45.0
+sam3_session_reset_s: 5.0
+sam3_score_threshold_detection: 0.6
+sam3_det_nms_thresh: 0.1
+sam3_new_det_thresh: 0.8
+sam3_fill_hole_area: 256
+sam3_recondition_every_nth_frame: 8
+sam3_recondition_on_trk_masks: true
+sam3_high_conf_thresh: 0.5
+sam3_high_iou_thresh: 0.4
+sam3_region: contour
+sam3_output_format: native
+sam3_write_annotated_video: false
+sam3_annotated_video_trails: false
+sam3_annotated_video_label_style: "id"
+sam3_annotated_video_mask_opacity: 0
+
+event_captioning: true
+event_caption_backend: "qwen"
+event_caption_qwen_variant: "qwen3_vl_30b_fp8"
+event_caption_qwen_fp8: false
+event_caption_qwen_sampling_fps: 2.0
+event_caption_qwen_temperature: 0.1
+event_caption_qwen_top_p: 0.9
+# Prompt file ships in this cookbook directory (mounted via DATA_DIR).
+event_caption_prompt_file: /data/event_caption_prompt.txt
+event_caption_prompt: null
+
+# -- Embedding --
+embedding_algorithm: "cosmos-embed1-224p"
+
+# -- Features --
+generate_captions: true
+generate_embeddings: true
+upload_clips: true
+write_all_caption_json: true
+
+# -- Performance (perf profiling useful for long runs) --
+perf_profile: true

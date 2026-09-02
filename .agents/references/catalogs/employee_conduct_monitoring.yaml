@@ -1,0 +1,107 @@
+domain: employee conduct monitoring
+baseline_event: normal employee work activity
+
+keywords:
+  - office floor
+  - break room
+  - warehouse floor
+  - outdoor yard
+  - employee
+  - worker
+  - staff
+  - desk
+  - workstation
+  - cubicle
+  - corridor
+  - hallway
+  - locker room
+  - restroom
+  - loading area
+  - shift
+  - badge
+  - access control
+  - restricted area
+  - secured door
+  - fencing
+  - gate
+  - vaping
+  - smoking
+  - substance use
+  - fighting
+  - sleeping
+  - horseplay
+
+events:
+  critical:
+    # immediate danger
+    - physical altercation between employees
+    - employee assault with object or weapon
+    - employee collapse or medical emergency
+    - fire or hazardous material incident in facility
+
+  serious:
+    # high-risk visible unsafe acts
+    - substance use on premises
+    - sleeping on duty
+    - workplace intimidation or cornering
+    - unauthorized area access
+    - employee threatening behavior or intimidation
+
+  moderate:
+    # disruptive / unsafe visible behavior
+    - employee horseplay
+    - employee loitering in unauthorized area
+    - group congregation during shift hours
+    - employee in restricted area without escort
+    - vandalism or property damage
+    - employee using personal device in prohibited area
+
+  low:
+    # lower-severity visible anomalies
+    - employee dress code violation
+    - unattended personal belongings in restricted area
+    - employee taking unauthorized break
+    - unusual visitor or unescorted guest
+    - after-hours employee presence
+    - tailgating through secured entrance without confrontation
+
+remap:
+  fight: physical altercation between employees
+  brawl: physical altercation between employees
+  fighting: physical altercation between employees
+  punching: physical altercation between employees
+  assault: physical altercation between employees
+  attack: employee assault with object or weapon
+  weapon: employee assault with object or weapon
+  smoking: substance use on premises
+  vaping: substance use on premises
+  drinking alcohol: substance use on premises
+  drug use: substance use on premises
+  sleeping: sleeping on duty
+  asleep at desk: sleeping on duty
+  passed out: sleeping on duty
+  employee unconscious: employee collapse or medical emergency
+  cornering employee: workplace intimidation or cornering
+  unwanted contact: workplace intimidation or cornering
+  intimidation: employee threatening behavior or intimidation
+  threatening: employee threatening behavior or intimidation
+  trespassing: unauthorized area access
+  tailgating: unauthorized area access
+  badge bypass: unauthorized area access
+  unauthorized entry: unauthorized area access
+  roughhousing: employee horseplay
+  chasing: employee horseplay
+  play fighting: employee horseplay
+  throwing objects: employee horseplay
+  loitering: employee loitering in unauthorized area
+  lingering: employee loitering in unauthorized area
+  after hours: after-hours employee presence
+
+excluded:
+  - video artifact or glitch
+  - camera malfunction
+  - unknown
+  - other
+  - routine maintenance
+  - authorized break activity
+  - shift change activity
