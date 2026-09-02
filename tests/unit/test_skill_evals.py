@@ -11,7 +11,7 @@ from pathlib import Path
 EVALS = (
     Path(__file__).resolve().parents[2]
     / "skills"
-    / "curation-and-retrieval"
+    / "paidf-curation-and-retrieval"
     / "evals"
     / "evals.json"
 )
@@ -34,7 +34,7 @@ def test_evals_json_is_harbor_task_array() -> None:
         assert isinstance(task, dict)
         missing = [key for key in REQUIRED_KEYS if key not in task]
         assert not missing, f"task {task.get('id')!r} missing {missing}"
-        assert task["expected_skill"] == "curation-and-retrieval"
+        assert task["expected_skill"] == "paidf-curation-and-retrieval"
         assert isinstance(task["question"], str) and task["question"].strip()
         assert isinstance(task["ground_truth"], str) and task["ground_truth"].strip()
         assert isinstance(task["expected_behavior"], list)

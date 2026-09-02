@@ -1,5 +1,5 @@
 ---
-name: curation-and-retrieval
+name: paidf-curation-and-retrieval
 description: >-
   Use when operating PAIDF Curation and Retrieval or NVIDIA Cosmos Curator
   pipelines (split, filter, caption, embed, dedup, shard, image annotate) or

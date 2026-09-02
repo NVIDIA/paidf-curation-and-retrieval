@@ -31,4 +31,4 @@ uv run pytest tests/unit -q
 
 - [User Guide](../user-guide/README.md)
 - [`CLAUDE.md`](../../CLAUDE.md)
-- [Skills](../../skills/curation-and-retrieval/)
+- [Skills](../../skills/paidf-curation-and-retrieval/)
